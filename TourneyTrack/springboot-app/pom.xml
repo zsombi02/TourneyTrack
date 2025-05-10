@@ -22,6 +22,11 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.tourneytrack</groupId>
+            <artifactId>dal</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- web, security, JPA -->
         <dependency>
