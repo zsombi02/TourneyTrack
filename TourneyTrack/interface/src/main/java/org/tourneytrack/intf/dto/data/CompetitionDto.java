@@ -15,5 +15,4 @@ public class CompetitionDto {
     private Date deadline;
     private boolean inProgress;
     private List<RuleSetDto> ruleSets;
-    private Long scoreBoardId;
 }

@@ -9,4 +9,6 @@ public interface RuleSetDao {
     RuleSet save(RuleSet ruleSet);
     Optional<RuleSet> findById(Long id);
     List<RuleSet> findAll();
+    boolean existsById(Long id);
+    void deleteById(Long id);
 }

@@ -1,16 +1,11 @@
 package org.tourneytrack.impl.business.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.tourneytrack.impl.business.mapper.CompetitionMapper;
-import org.tourneytrack.impl.business.mapper.ScoreBoardMapper;
-import org.tourneytrack.impl.dao.CompetitionDao;
-import org.tourneytrack.impl.dao.RuleSetDao;
-import org.tourneytrack.impl.dao.ScoreBoardDao;
-import org.tourneytrack.impl.dao.UserDao;
-import org.tourneytrack.impl.data.*;
+import org.tourneytrack.impl.data.Competition;
+import org.tourneytrack.impl.data.RuleSet;
+import org.tourneytrack.impl.data.ScoreEntry;
 import org.tourneytrack.intf.dto.data.CompetitionDto;
-import org.tourneytrack.intf.dto.data.ScoreBoardDto;
+import org.tourneytrack.intf.dto.data.ScoreEntryDto;
 import org.tourneytrack.intf.dto.request.CreateCompetitionRequest;
 import org.tourneytrack.intf.dto.request.UpdateCompetitionRequest;
 
@@ -19,47 +14,28 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
-public class CompetitionServiceImpl implements CompetitionService {
-
-    private final CompetitionMapper competitionMapper;
-
-    private final ScoreBoardMapper scoreBoardMapper;
-
-    private final CompetitionDao dao;
-
-    private final RuleSetDao ruleSetDao;
-
-    private final ScoreBoardDao scoreBoardDao;
-
-    private final UserDao userDao;
+public class CompetitionServiceImpl extends AbstractServiceBase implements CompetitionService {
 
 
     @Override
     public void createCompetition(CreateCompetitionRequest request) {
-
+        validationService.validateDeadlineNotInPast(request.getDeadline());
+        validationService.validateUserExists(request.getGameMasterId());
+        validationService.validateRuleSetsExist(request.getRuleSetIds());
 
         Competition competition = competitionMapper.fromCreateCompetitionRequest(request);
-
-        User gameMaster = userDao.findById(request.getGameMasterId()).orElseThrow();
-        competition.setGameMaster(gameMaster);
-
-        ScoreBoard newBoard = scoreBoardDao.createEmpty();
-        competition.setScoreBoardId(newBoard.getId());
-
-        List<RuleSet> ruleSets = request.getRuleSetIds().stream()
-                .map(id -> ruleSetDao.findById(id).orElseThrow())
-                .collect(Collectors.toList());
-
-        competition.setRuleSets(ruleSets);
-
-        dao.save(competition);
-        System.out.println("Create competition: " + competition);
+        competition.setGameMaster(userDao.findById(request.getGameMasterId()).orElseThrow());
+        competition.setRuleSets(
+                request.getRuleSetIds().stream()
+                        .map(id -> ruleSetDao.findById(id).orElseThrow())
+                        .collect(Collectors.toList())
+        );
+        competitionDao.save(competition);
     }
 
     @Override
     public CompetitionDto getById(Long id) {
-        Optional<Competition> competition = dao.findById(id);
+        Optional<Competition> competition = competitionDao.findById(id);
         if (competition.isPresent()) {
             return competitionMapper.toDto(competition.get());
         }
@@ -68,76 +44,104 @@ public class CompetitionServiceImpl implements CompetitionService {
 
     @Override
     public List<CompetitionDto> listForUser(Long userId) {
-        return dao.findAllByUserId(userId).stream()
+        return competitionDao.findAllByUserId(userId).stream()
                 .map(competitionMapper::toDto)
                 .collect(Collectors.toList());
     }
 
 
     @Override
-    public ScoreBoardDto getScoreBoard(Long competitionId) {
-        Competition competition = dao.findById(competitionId).orElseThrow();
-        return scoreBoardMapper.toDto(scoreBoardDao.findById(competition.getScoreBoardId()));
+    public List<ScoreEntryDto> getScoreBoard(Long competitionId) {
+        List<ScoreEntry> entries = scoreEntryDao.findAllByCompetitionId(competitionId);
+        return entries.stream().map(scoreEntryMapper::toDto).collect(Collectors.toList());
     }
+
 
     @Override
     public void assignRuleSet(Long competitionId, Long ruleSetId) {
-        Competition competition = dao.findById(competitionId).orElseThrow();
+        Competition competition = competitionDao.findById(competitionId).orElseThrow();
         RuleSet ruleSet = ruleSetDao.findById(ruleSetId).orElseThrow();
 
         if (!competition.getRuleSets().contains(ruleSet)) {
             competition.getRuleSets().add(ruleSet);
-            dao.save(competition);
+            competitionDao.save(competition);
         }
     }
 
     @Override
     public void removeRuleSet(Long competitionId, Long ruleSetId) {
-        Competition competition = dao.findById(competitionId).orElseThrow();
+        Competition competition = competitionDao.findById(competitionId).orElseThrow();
         competition.getRuleSets().removeIf(rs -> rs.getId().equals(ruleSetId));
-        dao.save(competition);
+        competitionDao.save(competition);
     }
 
 
     @Override
     public void stopCompetition(Long competitionId) {
-        Competition competition = dao.findById(competitionId).orElseThrow();
-        competition.setInProgress(false);
-        dao.save(competition);
+        Competition comp = validationService.validateCompetitionExists(competitionId);
+        comp.setInProgress(false);
+        competitionDao.save(comp);
     }
 
     @Override
     public void update(Long id, UpdateCompetitionRequest request) {
-        Competition competition = dao.findById(id).orElseThrow();
+        Competition comp = validationService.validateCompetitionExists(id);
+        if (request.getDeadline() != null) validationService.validateDeadlineNotInPast(request.getDeadline());
 
-        // Csak akkor állítjuk, ha jön új érték
-        if (request.getName() != null) {
-            competition.setName(request.getName());
-        }
+        if (request.getName() != null) comp.setName(request.getName());
+        if (request.getDescription() != null) comp.setDescription(request.getDescription());
+        if (request.getDeadline() != null) comp.setDeadline(request.getDeadline());
 
-        if (request.getDescription() != null) {
-            competition.setDescription(request.getDescription());
-        }
-
-        if (request.getDeadline() != null) {
-            competition.setDeadline(request.getDeadline());
-        }
-
-        if (request.getRuleSetIds() != null) {
-            List<RuleSet> ruleSets = request.getRuleSetIds().stream()
-                    .map(idRs -> ruleSetDao.findById(idRs).orElseThrow())
-                    .collect(Collectors.toList());
-            competition.setRuleSets(ruleSets);
-        }
-
-        dao.save(competition);
+        competitionDao.save(comp);
     }
 
 
     @Override
     public void delete(Long id) {
-        dao.deleteById(id);
+        validationService.validateCompetitionExists(id);
+        competitionDao.deleteById(id);
     }
 
+    @Override
+    public void joinCompetition(Long competitionId, Long userId) {
+        Competition comp = validationService.validateCompetitionExists(competitionId);
+        validationService.validateUserExists(userId);
+        validationService.validateCompetitionIsOpen(comp);
+        validationService.validateUserNotAlreadyJoined(comp, userId);
+
+        comp.getParticipants().add(userDao.findById(userId).orElseThrow());
+        competitionDao.save(comp);
+    }
+
+    @Override
+    public void leaveCompetition(Long competitionId, Long userId) {
+        Competition comp = validationService.validateCompetitionExists(competitionId);
+        validationService.validateUserExists(userId);
+        validationService.validateUserJoined(comp, userId);
+
+        comp.getParticipants().removeIf(u -> u.getId().equals(userId));
+        competitionDao.save(comp);
+    }
+
+    @Override
+    public List<CompetitionDto> listJoinedCompetitions(Long userId) {
+        return competitionDao.findAllByUserId(userId).stream()
+                .map(competitionMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isParticipant(Long competitionId, Long userId) {
+        Competition competition = competitionDao.findById(competitionId).orElseThrow();
+        return competition.getParticipants().stream()
+                .anyMatch(user -> user.getId().equals(userId));
+    }
+
+    @Override
+    public List<CompetitionDto> listAll() {
+        return competitionDao.findAll().stream()
+                .map(competitionMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
 }

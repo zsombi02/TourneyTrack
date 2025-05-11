@@ -18,5 +18,4 @@ public class Competition {
     private boolean inProgress;
 
     private List<RuleSet> ruleSets;
-    private Long scoreBoardId;
 }

@@ -8,5 +8,6 @@ import java.util.List;
 public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Long> {
     List<SubmissionEntity> findByCompetitionId(Long competitionId);
     List<SubmissionEntity> findByUserId(Long userId);
+    boolean existsByRuleId(Long ruleId);
 
 }

@@ -14,4 +14,6 @@ public interface RuleSetService {
     RuleSetDto addRule(Long ruleSetId, CreateRuleRequest request);
     RuleSetDto updateRule(Long ruleSetId, Long ruleId, UpdateRuleRequest request);
     RuleSetDto deleteRule(Long ruleSetId, Long ruleId);
+    RuleSetDto updateRuleSet(Long id, CreateRuleSetRequest request);
+    public void deleteRuleSet(Long id);
 }

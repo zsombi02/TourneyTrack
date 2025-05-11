@@ -11,9 +11,7 @@ import org.tourneytrack.impl.data.ScoreEntry;
 })
 public interface ScoreEntryEntityMapper {
 
-    @Mapping(source = "scoreBoardId", target = "scoreBoardId")
     ScoreEntryEntity toEntity(ScoreEntry model);
 
-    @Mapping(source = "scoreBoardId", target = "scoreBoardId")
     ScoreEntry toModel(ScoreEntryEntity entity);
 }

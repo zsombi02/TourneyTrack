@@ -6,5 +6,6 @@ import org.tourneytrack.dal.entity.ScoreEntryEntity;
 import java.util.List;
 
 public interface ScoreEntryRepository extends JpaRepository<ScoreEntryEntity, Long> {
-    List<ScoreEntryEntity> findAllByScoreBoardId(Long scoreBoardId);
+    List<ScoreEntryEntity> findAllByCompetitionId(Long competitionId);
+
 }

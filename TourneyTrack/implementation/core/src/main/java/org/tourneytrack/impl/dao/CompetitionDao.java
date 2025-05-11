@@ -10,4 +10,6 @@ public interface CompetitionDao {
     Optional<Competition> findById(Long id);
     List<Competition> findAllByUserId(Long userId);
     void deleteById(Long id);
+    List<Competition> findAll();
+
 }

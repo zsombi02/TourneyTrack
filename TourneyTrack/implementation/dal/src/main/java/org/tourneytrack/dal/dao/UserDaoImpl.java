@@ -34,4 +34,12 @@ public class UserDaoImpl implements UserDao {
     public List<User> findAll() {
         return repository.findAll().stream().map(mapper::toModel).collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return repository.findByEmail(email)
+                .map(mapper::toModel);
+    }
+
+
 }

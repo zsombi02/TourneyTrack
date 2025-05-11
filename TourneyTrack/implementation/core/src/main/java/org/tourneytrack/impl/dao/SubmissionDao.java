@@ -10,5 +10,6 @@ public interface SubmissionDao {
     Optional<Submission> findById(Long id);
     List<Submission> findByCompetitionId(Long competitionId);
     List<Submission> findByUserId(Long userId);
+    Boolean existsByRuleId(Long ruleId);
 
 }

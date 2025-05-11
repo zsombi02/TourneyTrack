@@ -14,71 +14,59 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
-public class SubmissionServiceImpl implements SubmissionService {
-
-    private final SubmissionDao dao;
-    private final SubmissionMapper mapper;
-
-    private final ScoreBoardDao scoreBoardDao;
-    private final CompetitionDao competitionDao;
-    private final UserDao userDao;
-    private final RuleDao ruleDao;
-    private final ScoreEntryDao scoreEntryDao;
+public class SubmissionServiceImpl extends AbstractServiceBase implements SubmissionService {
 
 
     @Override
     public void submitScore(SubmitScoreRequest request) {
+        Competition comp = validationService.validateCompetitionExists(request.getCompetitionId());
+        validationService.validateCompetitionIsOpen(comp);
+        validationService.validateUserJoined(comp, request.getUserId());
+        validationService.validateRuleExists(request.getRuleId());
+        validationService.validateRuleIsPartOfCompetition(request.getRuleId(), comp);
+        validationService.validateUserExists(request.getUserId());
+
         Submission submission = new Submission();
-
-        User user = userDao.findById(request.getUserId()).orElseThrow();
-        submission.setUser(user);
-
-        Rule rule = ruleDao.getRuleById(request.getRuleId());
-        submission.setRule(rule);
-
+        submission.setUser(userDao.findById(request.getUserId()).orElseThrow());
+        submission.setRule(ruleDao.getRuleById(request.getRuleId()));
         submission.setCompetitionId(request.getCompetitionId());
         submission.setDescription(request.getDescription());
         submission.setSubmittedAt(new Date());
         submission.setStatus(SubmissionStatus.PENDING);
 
-        dao.save(submission);
+        submissionDao.save(submission);
     }
-
 
     @Override
     public List<SubmissionDto> getByCompetition(Long competitionId) {
-        return dao.findByCompetitionId(competitionId).stream()
-                .map(mapper::toDto)
+        return submissionDao.findByCompetitionId(competitionId).stream()
+                .map(submissionMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void handleApproval(Long id, ApproveSubmissionRequest request) {
-        Submission submission = dao.findById(id).orElseThrow();
+        Submission submission = validationService.validateSubmissionExists(id);
+        validationService.validateSubmissionPending(submission);
 
         submission.setStatus(request.isApproved() ? SubmissionStatus.APPROVED : SubmissionStatus.REJECTED);
         submission.setReviewerComment(request.getReviewerComment());
-        dao.save(submission);
+        submissionDao.save(submission);
 
         if (submission.getStatus() == SubmissionStatus.APPROVED) {
-            Competition competition = competitionDao.findById(submission.getCompetitionId()).orElseThrow();
-
             ScoreEntry entry = new ScoreEntry();
             entry.setPlayer(submission.getUser());
             entry.setRule(submission.getRule());
             entry.setPointsEarned(submission.getRule().getPoints());
-            entry.setScoreBoardId(competition.getScoreBoardId());
-
-            // 👉 KELL hozzá ScoreEntryDao
+            entry.setCompetitionId(submission.getCompetitionId());
             scoreEntryDao.save(entry);
         }
     }
 
     @Override
     public List<SubmissionDto> getByUser(Long userId) {
-        return dao.findByUserId(userId).stream()
-                .map(mapper::toDto)
+        return submissionDao.findByUserId(userId).stream()
+                .map(submissionMapper::toDto)
                 .collect(Collectors.toList());
     }
 

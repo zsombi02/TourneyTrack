@@ -13,31 +13,40 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends AbstractServiceBase implements UserService {
 
-    private final UserDao dao;
-    private final UserMapper mapper;
 
     @Override
     public UserDto register(RegisterUserRequest request) {
+        validationService.validateRegisterFields(request);
+        validationService.validateEmailNotUsed(request.getEmail());
+
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setType(mapper.toModel(request.getType()));
+        user.setType(userMapper.toModel(request.getType()));
 
-        return mapper.toDto(dao.save(user));
+        return userMapper.toDto(userDao.save(user));
     }
 
     @Override
     public UserDto getById(Long id) {
-        Optional<User> user = dao.findById(id);
-        return user.map(mapper::toDto).orElse(null);
+        return userMapper.toDto(validationService.validateUserExistsById(id));
     }
 
     @Override
     public List<UserDto> listAll() {
-        return dao.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+        return userDao.findAll().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
     }
+
+    @Override
+    public UserDto getByEmail(String email) {
+        return userDao.findByEmail(email)
+                .map(userMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+
 }

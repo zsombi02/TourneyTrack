@@ -8,6 +8,6 @@ public class ScoreEntry {
     private Rule rule;
     private int pointsEarned;
 
-    private Long scoreBoardId;
+    private Long competitionId;
 
 }

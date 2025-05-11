@@ -7,4 +7,5 @@ public class ScoreEntryDto {
     private UserDto player;
     private RuleDto rule;
     private int pointsEarned;
+    private Long competitionId;
 }

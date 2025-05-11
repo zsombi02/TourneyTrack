@@ -1,9 +1,8 @@
 package org.tourneytrack.impl.controller;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.tourneytrack.impl.business.service.RuleSetService;
-import org.tourneytrack.intf.controller.RuleSetController;
+import org.tourneytrack.intf.controller.GameMasterRuleSetControllerIntf;
 import org.tourneytrack.intf.dto.data.RuleSetDto;
 import org.tourneytrack.intf.dto.request.CreateRuleRequest;
 import org.tourneytrack.intf.dto.request.CreateRuleSetRequest;
@@ -12,24 +11,27 @@ import org.tourneytrack.intf.dto.request.UpdateRuleRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rulesets")
-@RequiredArgsConstructor
-public class RuleSetControllerImpl implements RuleSetController {
-
-    private final RuleSetService ruleSetService;
+@RequestMapping("/api/master/rulesets")
+@PreAuthorize("hasRole('GAME_MASTER')")
+public class GameMasterRuleSetController extends AbstractController implements GameMasterRuleSetControllerIntf {
 
     @PostMapping
     public RuleSetDto createRuleSet(@RequestBody CreateRuleSetRequest request) {
         return ruleSetService.createRuleSet(request);
     }
 
-    @GetMapping("/{id}")
-    public RuleSetDto getRuleSetById(@PathVariable Long id) {
-        return ruleSetService.getRuleSetById(id);
+    @PutMapping("/{id}")
+    public RuleSetDto updateRuleSet(@PathVariable Long id, @RequestBody CreateRuleSetRequest request) {
+        return ruleSetService.updateRuleSet(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteRuleSet(@PathVariable Long id) {
+        ruleSetService.deleteRuleSet(id);
     }
 
     @GetMapping
-    public List<RuleSetDto> listAllRuleSets() {
+    public List<RuleSetDto> listAll() {
         return ruleSetService.listAll();
     }
 

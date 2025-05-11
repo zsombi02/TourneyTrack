@@ -8,6 +8,9 @@ import org.tourneytrack.dal.repository.ScoreEntryRepository;
 import org.tourneytrack.impl.dao.ScoreEntryDao;
 import org.tourneytrack.impl.data.ScoreEntry;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class ScoreEntryDaoImpl implements ScoreEntryDao {
@@ -20,4 +23,13 @@ public class ScoreEntryDaoImpl implements ScoreEntryDao {
         ScoreEntryEntity entity = mapper.toEntity(entry);
         repository.save(entity);
     }
+
+    @Override
+    public List<ScoreEntry> findAllByCompetitionId(Long competitionId) {
+        return repository.findAllByCompetitionId(competitionId)
+                .stream()
+                .map(mapper::toModel)
+                .collect(Collectors.toList());
+    }
+
 }

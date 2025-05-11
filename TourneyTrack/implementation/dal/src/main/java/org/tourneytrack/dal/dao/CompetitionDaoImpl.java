@@ -42,5 +42,12 @@ public class CompetitionDaoImpl implements CompetitionDao {
         repository.deleteById(id);
     }
 
+    @Override
+    public List<Competition> findAll() {
+        return repository.findAll().stream()
+                .map(mapper::toModel)
+                .collect(Collectors.toList());
+    }
+
 
 }

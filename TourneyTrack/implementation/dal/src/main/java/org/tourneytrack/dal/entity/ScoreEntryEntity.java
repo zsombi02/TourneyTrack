@@ -23,8 +23,8 @@ public class ScoreEntryEntity {
 
     private int pointsEarned;
 
-    @Column(name = "scoreboard_id", nullable = false)
-    private Long scoreBoardId;
+    @Column(name = "competition_id", nullable = false)
+    private Long competitionId;
 
 
 }

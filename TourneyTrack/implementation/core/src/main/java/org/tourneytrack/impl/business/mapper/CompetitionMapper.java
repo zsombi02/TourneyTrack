@@ -25,10 +25,6 @@ public interface CompetitionMapper {
 
     User toModel(UserDto userDto);
 
-    ScoreBoardDto toDto(ScoreBoard scoreBoard);
-
-    ScoreBoard toModel(ScoreBoardDto scoreBoardDto);
-
     ScoreEntryDto toDto(ScoreEntry scoreEntry);
 
     ScoreEntry toModel(ScoreEntryDto scoreEntryDto);
@@ -37,7 +33,6 @@ public interface CompetitionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "participants", ignore = true)
     @Mapping(target = "inProgress", constant = "true")
-    @Mapping(target = "scoreBoardId", ignore = true) // üresen indul
     @Mapping(target = "ruleSets", ignore = true)
     Competition fromCreateCompetitionRequest(CreateCompetitionRequest request);
 }

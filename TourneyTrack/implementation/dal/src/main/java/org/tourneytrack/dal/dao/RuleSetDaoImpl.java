@@ -39,4 +39,15 @@ public class RuleSetDaoImpl implements RuleSetDao {
                          .map(mapper::toModel)
                          .collect(Collectors.toList());
     }
+
+
+    @Override
+    public boolean existsById(Long id) {
+        return repository.existsById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
 }

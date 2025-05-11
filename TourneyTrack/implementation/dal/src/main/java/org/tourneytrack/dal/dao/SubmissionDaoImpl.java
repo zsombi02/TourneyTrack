@@ -44,4 +44,9 @@ public class SubmissionDaoImpl implements SubmissionDao {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Boolean existsByRuleId(Long ruleId) {
+        return repository.existsByRuleId(ruleId);
+    }
+
 }

@@ -43,7 +43,5 @@ public class CompetitionEntity {
     )
     private List<RuleSetEntity> ruleSets;
 
-    @Column(name = "scoreboard_id")
-    private Long scoreBoardId;
 
 }
