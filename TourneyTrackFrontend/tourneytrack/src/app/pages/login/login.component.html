@@ -1,0 +1,14 @@
+<mat-card>
+  <h2>Bejelentkezés</h2>
+  <form (ngSubmit)="onSubmit()" #form="ngForm">
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" name="email" [(ngModel)]="email" required />
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Jelszó</mat-label>
+      <input matInput type="password" name="password" [(ngModel)]="password" required />
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Belépés</button>
+  </form>
+</mat-card>

@@ -19,7 +19,7 @@ public interface CompetitionEntityMapper {
     default void setRuleSetInRules(@MappingTarget RuleSetEntity entity) {
         if (entity.getRules() != null) {
             for (RuleEntity rule : entity.getRules()) {
-                rule.setRuleSet(entity);
+//                rule.setRuleSet(entity);
             }
         }
     }

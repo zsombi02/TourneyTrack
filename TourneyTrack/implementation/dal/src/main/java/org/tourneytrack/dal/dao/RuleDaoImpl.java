@@ -28,7 +28,7 @@ public class RuleDaoImpl implements RuleDao {
         entity.setDescription(rule.getDescription());
         entity.setPoints(rule.getPoints());
         entity.setRepetitions(rule.getRepetitions());
-        entity.setRuleSet(ruleSet);
+//        entity.setRuleSet(ruleSet);
         repository.save(entity);
     }
 
@@ -43,7 +43,7 @@ public class RuleDaoImpl implements RuleDao {
     }
 
     @Override
-    public void delete(Long ruleId) {
+    public void deleteById(Long ruleId) {
         repository.deleteById(ruleId);
     }
 

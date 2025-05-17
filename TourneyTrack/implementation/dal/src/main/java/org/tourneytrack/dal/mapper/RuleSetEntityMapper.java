@@ -51,7 +51,7 @@ public interface RuleSetEntityMapper {
                 re.setDescription(r.getDescription());
                 re.setPoints(r.getPoints());
                 re.setRepetitions(r.getRepetitions());
-                re.setRuleSet(entity);
+//                re.setRuleSet(entity);
                 return re;
             }).collect(Collectors.toList());
             entity.setRules(ruleEntities);

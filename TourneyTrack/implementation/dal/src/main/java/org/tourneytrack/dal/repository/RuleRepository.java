@@ -6,5 +6,4 @@ import org.tourneytrack.dal.entity.RuleEntity;
 import java.util.List;
 
 public interface RuleRepository extends JpaRepository<RuleEntity, Long> {
-    List<RuleEntity> findByRuleSetId(Long ruleSetId);
 }

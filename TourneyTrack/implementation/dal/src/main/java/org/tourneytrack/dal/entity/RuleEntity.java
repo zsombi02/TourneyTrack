@@ -20,8 +20,5 @@ public class RuleEntity {
     private int points;
     private int repetitions;
 
-    @ManyToOne
-    @JoinColumn(name = "ruleset_id")
-    private RuleSetEntity ruleSet;
 
 }

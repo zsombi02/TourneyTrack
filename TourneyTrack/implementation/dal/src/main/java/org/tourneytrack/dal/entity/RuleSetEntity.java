@@ -18,7 +18,12 @@ public class RuleSetEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "ruleSet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(
+            name = "rule_set_rules", // join tábla neve
+            joinColumns = @JoinColumn(name = "ruleset_id"),
+            inverseJoinColumns = @JoinColumn(name = "rule_id")
+    )
     private List<RuleEntity> rules;
 
 }

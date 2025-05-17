@@ -1,10 +1,6 @@
 package org.tourneytrack.impl.business.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.tourneytrack.impl.business.mapper.RuleSetMapper;
-import org.tourneytrack.impl.dao.RuleDao;
-import org.tourneytrack.impl.dao.RuleSetDao;
 import org.tourneytrack.impl.data.Rule;
 import org.tourneytrack.impl.data.RuleSet;
 import org.tourneytrack.intf.dto.data.RuleSetDto;
@@ -70,8 +66,13 @@ public class RuleSetServiceImpl extends AbstractServiceBase implements RuleSetSe
         rule.setPoints(request.getPoints());
         rule.setRepetitions(request.getRepetitions());
 
-        ruleDao.save(rule, ruleSetId);
-        return getRuleSetById(ruleSetId);
+        // RÉGI:
+        // ruleDao.save(rule, ruleSetId);
+        // return getRuleSetById(ruleSetId);
+
+        // ÚJ:
+        RuleSet ruleSet = ruleSetDao.addRule(ruleSetId, rule);
+        return ruleSetMapper.toDto(ruleSet);
     }
 
     @Override
@@ -87,8 +88,8 @@ public class RuleSetServiceImpl extends AbstractServiceBase implements RuleSetSe
         rule.setPoints(request.getPoints());
         rule.setRepetitions(request.getRepetitions());
 
-        ruleDao.update(rule);
-        return getRuleSetById(ruleSetId);
+        RuleSet ruleSet = ruleSetDao.updateRule(ruleSetId, rule);
+        return ruleSetMapper.toDto(ruleSet);
     }
 
     @Override
@@ -97,8 +98,8 @@ public class RuleSetServiceImpl extends AbstractServiceBase implements RuleSetSe
         validationService.validateRuleExists(ruleId);
         validationService.validateRuleNotUsedInSubmissions(ruleId);
 
-        ruleDao.delete(ruleId);
-        return getRuleSetById(ruleSetId);
+        RuleSet ruleSet = ruleSetDao.removeRule(ruleSetId, ruleId);
+        return ruleSetMapper.toDto(ruleSet);
     }
 
     @Override

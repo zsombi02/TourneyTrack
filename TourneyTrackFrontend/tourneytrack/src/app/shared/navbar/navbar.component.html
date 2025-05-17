@@ -1,0 +1,40 @@
+<mat-toolbar color="primary" class="navbar">
+  <!-- BAL OLDAL -->
+  <span class="app-title" (click)="goToHome()" style="cursor: pointer;">
+    <mat-icon>sports_score</mat-icon> TourneyTrack
+  </span>
+  <button mat-button (click)="goToCompetitions()">Versenyek</button>
+  <button mat-button (click)="goToRulesets()"*ngIf="session.getUserType() === 'GAME_MASTER'" >Szabálykészletek</button>
+  <button mat-button (click)="goToCreateCompetition()" *ngIf="session.getUserType() === 'GAME_MASTER'">
+    <mat-icon>add_circle</mat-icon> Új verseny
+  </button>
+  <!-- jobb oldalra tolás -->
+  <span class="spacer"></span>
+
+  <!-- JOBB OLDAL - dinamikusan -->
+  <ng-container *ngIf="!session.isLoggedIn(); else loggedIn">
+    <form class="navbar-login-form" (ngSubmit)="onLogin()" autocomplete="off">
+      <mat-form-field appearance="outline" class="navbar-input">
+        <input matInput type="email" [(ngModel)]="loginEmail" name="email" placeholder="Email" required />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="navbar-input">
+        <input matInput type="password" [(ngModel)]="loginPassword" name="password" placeholder="Jelszó" required />
+      </mat-form-field>
+      <button mat-flat-button color="accent" type="submit">Belépés</button>
+    </form>
+    <button mat-button color="primary" (click)="goToRegister()">Regisztráció</button>
+  </ng-container>
+
+  <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
+
+  <ng-template #loggedIn>
+    <span class="user-info">
+      <mat-icon>account_circle</mat-icon>
+      {{ session.getName() }} <span *ngIf="session.getUserType()">[{{ session.getUserType() }}]</span>
+    </span>
+    <button mat-button (click)=goToProfile()>Profilom</button>
+    <!-- Szerepkör-specifikus menü -->
+    <button mat-button (click)=goToMyCompetitions()>Saját versenyeim</button>
+    <button mat-button (click)="logout()">Kijelentkezés</button>
+  </ng-template>
+</mat-toolbar>
