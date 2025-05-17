@@ -1,0 +1,27 @@
+<mat-card>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Szabálykészletek</h2>
+    <button mat-raised-button color="primary" (click)="openCreateDialog()">Új készlet</button>
+  </div>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let rs of rulesets">
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ rs.name }}</mat-panel-title>
+      </mat-expansion-panel-header>
+      <ul>
+        <li *ngFor="let rule of rs.rules">
+          <b>{{ rule.name }}</b> – {{ rule.description }} ({{ rule.points }} pont, {{ rule.repetitions }} ismétlés)
+          <button mat-icon-button color="primary" (click)="openEditRuleDialog(rs, rule)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteRule(rs.id, rule.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </li>
+      </ul>
+      <button mat-button (click)="openAddRuleDialog(rs)">Új szabály</button>
+      <button mat-stroked-button color="primary" (click)="openEditDialog(rs)">Szerkesztés</button>
+      <button mat-stroked-button color="warn" (click)="deleteRuleSet(rs.id)">Törlés</button>
+    </mat-expansion-panel>
+  </mat-accordion>
+</mat-card>

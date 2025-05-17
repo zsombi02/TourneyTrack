@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Új beadás</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Szabály</mat-label>
+    <mat-select [(ngModel)]="selectedRuleId" required>
+      <mat-option *ngFor="let rule of data.rules" [value]="rule.id">
+        {{ rule.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill" class="w-100">
+    <mat-label>Leírás</mat-label>
+    <textarea matInput rows="3" [(ngModel)]="description" required></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Mégsem</button>
+  <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!selectedRuleId || !description">Beküld</button>
+</mat-dialog-actions>

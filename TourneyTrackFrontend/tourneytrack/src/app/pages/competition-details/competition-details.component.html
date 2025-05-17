@@ -1,0 +1,93 @@
+<mat-card *ngIf="!competition">Betöltés...</mat-card>
+<mat-card *ngIf="competition">
+  <!-- FEJLÉC -->
+  <div class="competition-header">
+    <h2>{{ competition.name }}</h2>
+    <div *ngIf="isOwnerGameMaster()" style="margin-bottom: 10px;">
+      <button mat-raised-button color="accent" *ngIf="!adminMode" (click)="goToAdminView()">Admin nézet</button>
+      <button mat-stroked-button color="primary" *ngIf="adminMode" (click)="goToNormalView()">Normál nézet</button>
+    </div>
+    <span class="grow"></span>
+    <!-- Csak bejelentkezett PLAYEREKNEK -->
+    <ng-container *ngIf="isLoggedIn() && isPlayer()">
+      <button mat-stroked-button color="primary" (click)="onJoinOrLeave()">
+        {{ getJoinButtonLabel() }}
+      </button>
+      <button
+        mat-flat-button color="accent"
+        style="margin-left: 12px"
+        [disabled]="!isJoined()"
+        (click)="openSubmissionDialog()"
+      >Beadás</button>
+    </ng-container>
+  </div>
+
+  <ng-container *ngIf="!adminMode">
+
+
+    <mat-tab-group [(selectedIndex)]="selectedTab">
+      <mat-tab label="Overview">
+        <div>
+          <strong>Leírás:</strong> {{ competition.description }}<br>
+          <strong>Szervező:</strong> {{ competition.gameMaster?.name }}<br>
+          <strong>Határidő:</strong> {{ competition.deadline | date:'yyyy.MM.dd.' }}<br>
+          <strong>Résztvevők:</strong> {{ competition.participants?.length }}
+        </div>
+
+        <!-- Résztvevők listája -->
+        <div style="margin-top:16px;">
+          <h4>Résztvevők:</h4>
+          <ul>
+            <li *ngFor="let user of competition.participants">
+              {{ user.name }} <span style="color: #888">({{ user.email }})</span>
+            </li>
+          </ul>
+          <div *ngIf="!competition.participants || competition.participants.length === 0" style="color: #888;">Nincs résztvevő.</div>
+        </div>
+
+        <!-- Szabálykészletek és szabályok -->
+        <div style="margin-top:16px;">
+          <h4>Szabálykészletek:</h4>
+          <div *ngFor="let ruleSet of competition.ruleSets" style="margin-bottom: 12px;">
+            <b>{{ ruleSet.name }}</b>
+            <ul>
+              <li *ngFor="let rule of ruleSet.rules">
+                <strong>{{ rule.name }}</strong>:
+                {{ rule.description }} ({{ rule.points }} pont / {{ rule.repetitions }} ismétlés)
+              </li>
+            </ul>
+            <div *ngIf="!ruleSet.rules || ruleSet.rules.length === 0" style="color: #888;">Nincs szabály ebben a készletben.</div>
+          </div>
+          <div *ngIf="!competition.ruleSets || competition.ruleSets.length === 0" style="color: #888;">Nincs szabálykészlet ehhez a versenyhez.</div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Scoreboard">
+          <div *ngIf="scoreboard.length === 0">Nincs pontbeadás.</div>
+          <ul *ngIf="scoreboard.length > 0">
+            <li *ngFor="let s of scoreboard">
+              {{ s.player.name }} – {{ s.rule.name }}: {{ s.pointsEarned }} pont
+            </li>
+          </ul>
+        </mat-tab>
+        <mat-tab label="Submissions">
+          <div *ngIf="submissions.length === 0">Nincs beadás.</div>
+          <ul *ngIf="submissions.length > 0">
+            <li *ngFor="let sub of submissions">
+              {{ sub.user.name }} – {{ sub.rule.name }} – {{ sub.description }} – {{ sub.status }}
+            </li>
+          </ul>
+        </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+
+  <ng-container *ngIf="adminMode">
+    <app-competition-admin-details
+      [competition]="competition"
+      (reload)="loadCompetition(competition.id)">
+    </app-competition-admin-details>
+  </ng-container>
+
+
+</mat-card>
+

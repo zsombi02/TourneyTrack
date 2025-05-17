@@ -1,0 +1,42 @@
+<mat-card>
+  <form [formGroup]="editForm">
+    <mat-form-field>
+      <mat-label>Név</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Leírás</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Határidő</mat-label>
+      <input matInput type="date" formControlName="deadline" />
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="onSave()" type="button">Mentés</button>
+    <button mat-flat-button color="warn" (click)="onDeleteCompetition()" type="button">Verseny törlése</button>
+    <button mat-stroked-button color="warn" (click)="onStopCompetition()" type="button">Verseny leállítása</button>
+  </form>
+</mat-card>
+<mat-tab-group>
+  <mat-tab label="Scoreboard">
+    <ul>
+      <li *ngFor="let s of scoreboard">
+        {{ s.player.name }} – {{ s.rule.name }}: {{ s.pointsEarned }} pont
+      </li>
+    </ul>
+  </mat-tab>
+  <mat-tab label="Submissions">
+    <ul>
+      <li *ngFor="let sub of submissions">
+        <div>
+          {{ sub.user.name }} – {{ sub.rule.name }} – {{ sub.description }} – {{ sub.status }}
+        </div>
+        <mat-form-field>
+          <input matInput #comment placeholder="Reviewer comment" />
+        </mat-form-field>
+        <button mat-button color="primary" (click)="approveSubmission(sub, true, comment.value)">Approve</button>
+        <button mat-button color="warn" (click)="approveSubmission(sub, false, comment.value)">Reject</button>
+      </li>
+    </ul>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,18 @@
+<mat-card *ngIf="loading">Betöltés...</mat-card>
+<mat-card *ngIf="!loading && competitions.length === 0">Nincs verseny!</mat-card>
+<mat-accordion *ngIf="!loading">
+  <mat-expansion-panel *ngFor="let c of competitions">
+    <mat-expansion-panel-header>
+      <mat-panel-title>{{ c.name }}</mat-panel-title>
+      <mat-panel-description>
+        Szervező: {{ c.gameMaster?.name }} &nbsp;|&nbsp;
+        Határidő: {{ c.deadline | date:'yyyy.MM.dd.' }}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div>
+      <strong>Leírás:</strong> {{ c.description }}<br>
+      <strong>Határidő:</strong> {{ c.deadline | date:'yyyy.MM.dd.' }}
+    </div>
+    <button mat-button color="primary" (click)="openDetails(c.id)">Részletek</button>
+  </mat-expansion-panel>
+</mat-accordion>

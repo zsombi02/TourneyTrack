@@ -1,0 +1,27 @@
+<mat-card>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field class="w-100">
+      <mat-label>Verseny neve</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+    <mat-form-field class="w-100">
+      <mat-label>Leírás</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Határidő</mat-label>
+      <input matInput type="date" formControlName="deadline" required>
+    </mat-form-field>
+    <mat-form-field class="w-100">
+      <mat-label>Szabálykészletek</mat-label>
+      <mat-select formControlName="ruleSets" multiple>
+        <mat-option *ngFor="let rs of ruleSets" [value]="rs">{{ rs.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+<!--    <button mat-button type="button" (click)="addRuleSet()">Új szabálykészlet hozzáadása</button>-->
+    <mat-dialog-actions align="end">
+      <button mat-stroked-button type="button" (click)="router.navigate(['/competitions'])">Mégsem</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">Létrehozás</button>
+    </mat-dialog-actions>
+  </form>
+</mat-card>
