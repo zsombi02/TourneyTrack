@@ -25,7 +25,6 @@ public class ScoreEntryMapper {
         rule.setName(entry.getRule().getName());
         rule.setDescription(entry.getRule().getDescription());
         rule.setPoints(entry.getRule().getPoints());
-        rule.setRepetitions(entry.getRule().getRepetitions());
         dto.setRule(rule);
 
         dto.setCompetitionId(entry.getCompetitionId());

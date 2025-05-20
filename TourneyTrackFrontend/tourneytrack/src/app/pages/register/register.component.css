@@ -1,0 +1,24 @@
+.register-card {
+  max-width: 400px;
+  margin: 40px auto 0 auto;
+  padding: 32px 32px 22px 32px;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #0001;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.register-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.w-100 {
+  width: 100%;
+}

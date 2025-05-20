@@ -24,5 +24,7 @@ public interface CompetitionService {
     List<CompetitionDto> listJoinedCompetitions(Long userId);
     boolean isParticipant(Long competitionId, Long userId);
     List<CompetitionDto> listAll();
+    List<CompetitionDto> listByGameMaster(Long gameMasterId);
+
 
 }

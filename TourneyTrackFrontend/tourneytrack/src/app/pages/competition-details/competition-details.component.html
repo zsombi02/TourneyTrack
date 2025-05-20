@@ -1,83 +1,180 @@
-<mat-card *ngIf="!competition">Betöltés...</mat-card>
-<mat-card *ngIf="competition">
+<div class="competition-details-container">
+  <mat-card *ngIf="!competition">Betöltés...</mat-card>
+  <mat-card *ngIf="competition" class="competition-details-card">
   <!-- FEJLÉC -->
-  <div class="competition-header">
-    <h2>{{ competition.name }}</h2>
-    <div *ngIf="isOwnerGameMaster()" style="margin-bottom: 10px;">
-      <button mat-raised-button color="accent" *ngIf="!adminMode" (click)="goToAdminView()">Admin nézet</button>
-      <button mat-stroked-button color="primary" *ngIf="adminMode" (click)="goToNormalView()">Normál nézet</button>
+  <div class="competition-details-header">
+    <div>
+      <h2 class="competition-details-title">{{ competition.name }}</h2>
+      <div class="competition-details-meta">
+        <span>
+          <b>Szervező:</b> {{ competition.gameMaster?.name }}
+        </span>
+        <span class="dot"></span>
+        <span>
+          <b>Határidő:</b> {{ competition.deadline | date:'yyyy.MM.dd.' }}
+        </span>
+        <span class="dot"></span>
+        <span>
+          <b>Állapot:</b>
+          <span [ngClass]="competition.inProgress ? 'progress' : 'inactive'">
+            {{ competition.inProgress ? 'Folyamatban' : 'Lezárt' }}
+          </span>
+        </span>
+      </div>
     </div>
-    <span class="grow"></span>
-    <!-- Csak bejelentkezett PLAYEREKNEK -->
-    <ng-container *ngIf="isLoggedIn() && isPlayer()">
-      <button mat-stroked-button color="primary" (click)="onJoinOrLeave()">
-        {{ getJoinButtonLabel() }}
-      </button>
-      <button
-        mat-flat-button color="accent"
-        style="margin-left: 12px"
-        [disabled]="!isJoined()"
-        (click)="openSubmissionDialog()"
-      >Beadás</button>
-    </ng-container>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <ng-container *ngIf="isOwnerGameMaster()">
+        <button mat-raised-button color="accent" *ngIf="!adminMode" (click)="goToAdminView()">Admin nézet</button>
+        <button mat-stroked-button color="primary" *ngIf="adminMode" (click)="goToNormalView()">Normál nézet</button>
+      </ng-container>
+      <ng-container *ngIf="isLoggedIn() && isPlayer()">
+        <button mat-stroked-button color="primary" (click)="onJoinOrLeave()">
+          {{ getJoinButtonLabel() }}
+        </button>
+        <button
+          mat-flat-button color="accent"
+          style="margin-left: 6px"
+          [disabled]="!isJoined()"
+          (click)="openSubmissionDialog()"
+        >Beadás</button>
+      </ng-container>
+    </div>
   </div>
 
   <ng-container *ngIf="!adminMode">
-
-
     <mat-tab-group [(selectedIndex)]="selectedTab">
-      <mat-tab label="Overview">
-        <div>
-          <strong>Leírás:</strong> {{ competition.description }}<br>
-          <strong>Szervező:</strong> {{ competition.gameMaster?.name }}<br>
-          <strong>Határidő:</strong> {{ competition.deadline | date:'yyyy.MM.dd.' }}<br>
-          <strong>Résztvevők:</strong> {{ competition.participants?.length }}
+      <mat-tab label="Áttekintés">
+        <!-- Leírás külön blokkban -->
+        <div class="section-block description-block">
+          <div class="section-title">Leírás</div>
+          <div>{{ competition.description }}</div>
+          <div style="margin-top:10px;">
+            <b>Szervező:</b> {{ competition.gameMaster?.name }}<br>
+            <b>Határidő:</b> {{ competition.deadline | date:'yyyy.MM.dd.' }}<br>
+            <b>Állapot:</b>
+            <span [ngClass]="competition.inProgress ? 'badge-progress' : 'badge-done'">
+            {{ competition.inProgress ? 'Folyamatban' : 'Lezárva' }}
+          </span>
+          </div>
         </div>
-
-        <!-- Résztvevők listája -->
-        <div style="margin-top:16px;">
-          <h4>Résztvevők:</h4>
-          <ul>
-            <li *ngFor="let user of competition.participants">
-              {{ user.name }} <span style="color: #888">({{ user.email }})</span>
-            </li>
-          </ul>
-          <div *ngIf="!competition.participants || competition.participants.length === 0" style="color: #888;">Nincs résztvevő.</div>
-        </div>
-
-        <!-- Szabálykészletek és szabályok -->
-        <div style="margin-top:16px;">
-          <h4>Szabálykészletek:</h4>
-          <div *ngFor="let ruleSet of competition.ruleSets" style="margin-bottom: 12px;">
-            <b>{{ ruleSet.name }}</b>
-            <ul>
-              <li *ngFor="let rule of ruleSet.rules">
-                <strong>{{ rule.name }}</strong>:
-                {{ rule.description }} ({{ rule.points }} pont / {{ rule.repetitions }} ismétlés)
+        <!-- Kétoszlopos grid: Résztvevők | Szabálykészletek -->
+        <div class="details-row">
+          <div class="section-block">
+            <div class="section-title">Résztvevők ({{ competition.participants?.length || 0 }})</div>
+            <ul style="margin:0; padding-left:20px;">
+              <li *ngFor="let user of competition.participants">
+                {{ user.name }} <span class="email">({{ user.email }})</span>
               </li>
             </ul>
-            <div *ngIf="!ruleSet.rules || ruleSet.rules.length === 0" style="color: #888;">Nincs szabály ebben a készletben.</div>
+            <div *ngIf="!competition.participants || competition.participants.length === 0" style="color: #888;">Nincs résztvevő.</div>
           </div>
-          <div *ngIf="!competition.ruleSets || competition.ruleSets.length === 0" style="color: #888;">Nincs szabálykészlet ehhez a versenyhez.</div>
+          <div class="section-block">
+            <div class="section-title">Szabálykészletek</div>
+            <div *ngFor="let ruleSet of competition.ruleSets" class="ruleset-block">
+              <b>{{ ruleSet.name }}</b>
+              <ul style="margin:0 0 8px 20px;">
+                <li *ngFor="let rule of ruleSet.rules">
+                  <strong>{{ rule.name }}</strong>:
+                  {{ rule.description }} ({{ rule.points }} pont)
+                </li>
+              </ul>
+              <div *ngIf="!ruleSet.rules || ruleSet.rules.length === 0" style="color: #aaa;">Nincs szabály ebben a készletben.</div>
+            </div>
+            <div *ngIf="!competition.ruleSets || competition.ruleSets.length === 0" style="color: #aaa;">Nincs szabálykészlet ehhez a versenyhez.</div>
+          </div>
         </div>
       </mat-tab>
-
       <mat-tab label="Scoreboard">
-          <div *ngIf="scoreboard.length === 0">Nincs pontbeadás.</div>
-          <ul *ngIf="scoreboard.length > 0">
-            <li *ngFor="let s of scoreboard">
-              {{ s.player.name }} – {{ s.rule.name }}: {{ s.pointsEarned }} pont
-            </li>
-          </ul>
-        </mat-tab>
-        <mat-tab label="Submissions">
-          <div *ngIf="submissions.length === 0">Nincs beadás.</div>
-          <ul *ngIf="submissions.length > 0">
-            <li *ngFor="let sub of submissions">
-              {{ sub.user.name }} – {{ sub.rule.name }} – {{ sub.description }} – {{ sub.status }}
-            </li>
-          </ul>
-        </mat-tab>
+        <button mat-stroked-button color="primary" (click)="refreshScoreboard()" style="margin-bottom: 10px;">
+          Frissítés
+        </button>
+        <div class="scoreboard-table" *ngIf="playerScores.length > 0">
+          <div class="scoreboard-header">
+            <div class="place-cell"></div>
+            <div class="player-cell">Játékos</div>
+            <div class="total-cell">Pont</div>
+            <div class="expand-cell"></div>
+          </div>
+          <ng-container *ngFor="let ps of playerScores; let i = index">
+            <div class="scoreboard-row" [ngClass]="{ top1: i==0, top2: i==1, top3: i==2 }">
+              <div class="place-cell">
+                <ng-container [ngSwitch]="i">
+                  <mat-icon *ngSwitchCase="0" color="warn">emoji_events</mat-icon>
+                  <mat-icon *ngSwitchCase="1" color="accent">emoji_events</mat-icon>
+                  <mat-icon *ngSwitchCase="2" color="primary">emoji_events</mat-icon>
+                  <span *ngSwitchDefault>{{ i + 1 }}.</span>
+                </ng-container>
+              </div>
+              <div class="player-cell">{{ ps.player.name }}</div>
+              <div class="total-cell">{{ ps.total }}</div>
+              <div class="expand-cell">
+                <button mat-icon-button (click)="togglePlayerExpand(ps)">
+                  <mat-icon>{{ ps.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="ps.expanded" class="scoreboard-row-details">
+              <div class="scoreboard-rule-table">
+                <table>
+                  <thead>
+                  <tr>
+                    <th>Szabály</th>
+                    <th>Pont</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <ng-container *ngFor="let ruleSet of competition?.ruleSets">
+                    <tr>
+                      <td colspan="2"><b>{{ ruleSet.name }}</b></td>
+                    </tr>
+                    <tr *ngFor="let rule of ruleSet.rules">
+                      <td>{{ rule.name }}</td>
+                      <td>{{ ps.rulePoints[rule.id] || 0 }}</td>
+                    </tr>
+                  </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div *ngIf="playerScores.length === 0" style="margin: 20px;">Nincs pontbeadás.</div>
+      </mat-tab>
+
+      <mat-tab label="Beadások">
+        <div class="submissions-filter-row">
+          <button mat-button
+                  [color]="submissionStatusFilter==='ALL' ? 'primary' : ''"
+                  (click)="setSubmissionFilter('ALL')">Összes</button>
+          <button mat-button
+                  [color]="submissionStatusFilter==='PENDING' ? 'accent' : ''"
+                  (click)="setSubmissionFilter('PENDING')">Pending</button>
+          <button mat-button
+                  [color]="submissionStatusFilter==='APPROVED' ? 'success' : ''"
+                  (click)="setSubmissionFilter('APPROVED')">Approved</button>
+          <button mat-button
+                  [color]="submissionStatusFilter==='REJECTED' ? 'warn' : ''"
+                  (click)="setSubmissionFilter('REJECTED')">Rejected</button>
+        </div>
+        <div *ngIf="filteredSubmissions.length === 0" class="no-submissions">
+          Nincs ilyen státuszú beadás.
+        </div>
+        <div class="submission-list">
+          <mat-card *ngFor="let sub of filteredSubmissions" class="submission-card" [ngClass]="sub.status.toLowerCase()">
+            <div class="submission-header">
+              <span class="submission-user">{{ sub.user.name }}</span>
+              <span class="submission-date">{{ sub.submittedAt | date:'yyyy.MM.dd. HH:mm' }}</span>
+              <span class="submission-status" [ngClass]="sub.status.toLowerCase()">
+          {{ sub.status === 'PENDING' ? 'Függőben' : (sub.status === 'APPROVED' ? 'Elfogadva' : 'Elutasítva') }}
+        </span>
+            </div>
+            <div class="submission-details">
+              <b>Szabály:</b> {{ sub.rule.name }}<br>
+              <b>Leírás:</b> {{ sub.description }}
+            </div>
+          </mat-card>
+        </div>
+      </mat-tab>
     </mat-tab-group>
   </ng-container>
 
@@ -87,7 +184,5 @@
       (reload)="loadCompetition(competition.id)">
     </app-competition-admin-details>
   </ng-container>
-
-
-</mat-card>
-
+  </mat-card>
+</div>

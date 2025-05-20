@@ -25,13 +25,12 @@ public class RuleSetServiceImpl extends AbstractServiceBase implements RuleSetSe
 
         if (request.getRules() != null && !request.getRules().isEmpty()) {
             List<Rule> rules = request.getRules().stream().map(r -> {
-                validationService.validateRuleFields(r.getName(), r.getPoints(), r.getRepetitions());
+                validationService.validateRuleFields(r.getName(), r.getPoints());
 
                 Rule rule = new Rule();
                 rule.setName(r.getName());
                 rule.setDescription(r.getDescription());
                 rule.setPoints(r.getPoints());
-                rule.setRepetitions(r.getRepetitions());
                 return rule;
             }).collect(Collectors.toList());
             ruleSet.setRules(rules);
@@ -58,13 +57,12 @@ public class RuleSetServiceImpl extends AbstractServiceBase implements RuleSetSe
     @Override
     public RuleSetDto addRule(Long ruleSetId, CreateRuleRequest request) {
         validationService.validateRuleSetExists(ruleSetId);
-        validationService.validateRuleFields(request.getName(), request.getPoints(), request.getRepetitions());
+        validationService.validateRuleFields(request.getName(), request.getPoints());
 
         Rule rule = new Rule();
         rule.setName(request.getName());
         rule.setDescription(request.getDescription());
         rule.setPoints(request.getPoints());
-        rule.setRepetitions(request.getRepetitions());
 
         // RÉGI:
         // ruleDao.save(rule, ruleSetId);
@@ -79,14 +77,13 @@ public class RuleSetServiceImpl extends AbstractServiceBase implements RuleSetSe
     public RuleSetDto updateRule(Long ruleSetId, Long ruleId, UpdateRuleRequest request) {
         validationService.validateRuleSetExists(ruleSetId);
         validationService.validateRuleExists(ruleId);
-        validationService.validateRuleFields(request.getName(), request.getPoints(), request.getRepetitions());
+        validationService.validateRuleFields(request.getName(), request.getPoints());
 
         Rule rule = new Rule();
         rule.setId(ruleId);
         rule.setName(request.getName());
         rule.setDescription(request.getDescription());
         rule.setPoints(request.getPoints());
-        rule.setRepetitions(request.getRepetitions());
 
         RuleSet ruleSet = ruleSetDao.updateRule(ruleSetId, rule);
         return ruleSetMapper.toDto(ruleSet);

@@ -27,7 +27,6 @@ public interface RuleSetEntityMapper {
                 r.setName(e.getName());
                 r.setDescription(e.getDescription());
                 r.setPoints(e.getPoints());
-                r.setRepetitions(e.getRepetitions());
                 return r;
             }).collect(Collectors.toList());
             model.setRules(rules);
@@ -50,7 +49,6 @@ public interface RuleSetEntityMapper {
                 re.setName(r.getName());
                 re.setDescription(r.getDescription());
                 re.setPoints(r.getPoints());
-                re.setRepetitions(r.getRepetitions());
 //                re.setRuleSet(entity);
                 return re;
             }).collect(Collectors.toList());

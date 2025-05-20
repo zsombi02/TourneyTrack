@@ -3,7 +3,7 @@
   <mat-form-field appearance="fill" class="w-100">
     <mat-label>Szabály</mat-label>
     <mat-select [(ngModel)]="selectedRuleId" required>
-      <mat-option *ngFor="let rule of data.rules" [value]="rule.id">
+      <mat-option *ngFor="let rule of allowedRules" [value]="rule.id">
         {{ rule.name }}
       </mat-option>
     </mat-select>

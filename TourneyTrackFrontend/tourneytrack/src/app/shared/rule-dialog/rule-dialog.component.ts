@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogRef} from '@angular/material/dialog';
 import {RuleSetDto} from '../models/rule-set.dto';
 import {RuleSetGameMasterService} from '../../services/ruleset/rule-set-game-master.service';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
@@ -14,7 +14,6 @@ import {CreateRuleRequest} from '../models/requests/create-rule-request';
   imports: [
     MatFormField,
     ReactiveFormsModule,
-    MatDialogTitle,
     MatInput,
     MatDialogActions,
     MatButton,
@@ -38,7 +37,6 @@ export class RuleDialogComponent {
       name: [data.rule ? data.rule.name : '', Validators.required],
       description: [data.rule ? data.rule.description : '', Validators.required],
       points: [data.rule ? data.rule.points : 1, [Validators.required, Validators.min(1)]],
-      repetitions: [data.rule ? data.rule.repetitions : 1, [Validators.required, Validators.min(1)]]
     });
   }
 

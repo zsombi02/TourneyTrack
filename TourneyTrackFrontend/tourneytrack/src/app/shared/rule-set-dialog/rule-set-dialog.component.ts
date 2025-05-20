@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogActions, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogActions, MatDialogRef} from '@angular/material/dialog';
 import {RuleSetDto} from '../models/rule-set.dto';
 import {RuleSetGameMasterService} from '../../services/ruleset/rule-set-game-master.service';
 import {CreateRuleSetRequest} from '../models/requests/create-rule-set-request';
@@ -15,7 +15,6 @@ import {MatButton} from '@angular/material/button';
     MatLabel,
     MatFormField,
     MatDialogActions,
-    MatDialogTitle,
     MatInput,
     MatButton
   ],

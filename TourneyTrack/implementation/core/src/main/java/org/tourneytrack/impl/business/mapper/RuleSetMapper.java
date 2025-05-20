@@ -22,7 +22,6 @@ public class RuleSetMapper {
             r.setName(rule.getName());
             r.setDescription(rule.getDescription());
             r.setPoints(rule.getPoints());
-            r.setRepetitions(rule.getRepetitions());
             return r;
         }).collect(Collectors.toList());
 

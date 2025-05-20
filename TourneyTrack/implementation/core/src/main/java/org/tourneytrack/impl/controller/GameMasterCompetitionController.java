@@ -1,6 +1,7 @@
 package org.tourneytrack.impl.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.tourneytrack.intf.controller.GameMasterCompetitionControllerIntf;
 import org.tourneytrack.intf.dto.data.CompetitionDto;
@@ -45,5 +46,22 @@ public class GameMasterCompetitionController extends AbstractController implemen
     @GetMapping("/{id}/submissions")
     public List<SubmissionDto> getSubmissions(@PathVariable Long id) {
         return submissionService.getByCompetition(id);
+    }
+
+    @PostMapping("/{id}/assign-ruleset/{rulesetId}")
+    public void assignRuleSet(@PathVariable Long id, @PathVariable Long rulesetId) {
+        competitionService.assignRuleSet(id, rulesetId);
+    }
+
+    @DeleteMapping("/{id}/remove-ruleset/{rulesetId}")
+    public void removeRuleSet(@PathVariable Long id, @PathVariable Long rulesetId) {
+        competitionService.removeRuleSet(id, rulesetId);
+    }
+
+    @GetMapping("/my")
+    public List<CompetitionDto> getMyCompetitions(Authentication authentication) {
+        String email = authentication.getName();
+        Long userId = userService.getByEmail(email).getId();
+        return competitionService.listByGameMaster(userId);
     }
 }

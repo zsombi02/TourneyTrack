@@ -78,7 +78,6 @@ public class RuleSetDaoImpl implements RuleSetDao {
                 entity.setName(rule.getName());
                 entity.setDescription(rule.getDescription());
                 entity.setPoints(rule.getPoints());
-                entity.setRepetitions(rule.getRepetitions());
                 break;
             }
         }

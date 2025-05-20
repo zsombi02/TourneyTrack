@@ -1,27 +1,57 @@
-<mat-card>
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h2>Szabálykészletek</h2>
-    <button mat-raised-button color="primary" (click)="openCreateDialog()">Új készlet</button>
+<mat-card *ngIf="loading">Betöltés...</mat-card>
+<mat-card *ngIf="!loading && rulesets.length === 0">Nincs szabálykészlet.</mat-card>
+
+<div class="ruleset-grid" *ngIf="!loading && rulesets.length > 0">
+  <div class="ruleset-card-wrapper" *ngFor="let rs of rulesets">
+    <mat-card class="ruleset-card">
+      <!-- Fejléc: név és szerkesztés -->
+      <div class="ruleset-header-row">
+        <span class="ruleset-title">{{ rs.name }}</span>
+        <button
+          mat-icon-button
+          color="primary"
+          class="ruleset-rename-btn"
+          (click)="openEditDialog(rs)"
+          aria-label="Készlet átnevezése"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+      <!-- Szabálylista -->
+      <div class="rules-list-section">
+        <div class="section-title">Szabályok</div>
+        <ul class="rules-list">
+          <li *ngFor="let rule of rs.rules" class="rule-row">
+            <span class="rule-name"><b>{{ rule.name }}</b></span>
+            <span class="rule-desc">– {{ rule.description }}</span>
+            <span class="rule-meta">({{ rule.points }} pont)</span>
+            <span class="rule-action-icons">
+              <button mat-icon-button color="primary" (click)="openEditRuleDialog(rs, rule)" aria-label="Szabály szerkesztése">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteRule(rs.id, rule.id)" aria-label="Szabály törlése">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
+          </li>
+        </ul>
+        <div *ngIf="!rs.rules?.length" class="empty-note">Nincs szabály ebben a készletben.</div>
+      </div>
+      <!-- Action gombok -->
+      <div class="ruleset-card-actions">
+        <button mat-flat-button color="primary" (click)="openAddRuleDialog(rs)">
+          <mat-icon>add</mat-icon> Új szabály
+        </button>
+        <button mat-stroked-button color="warn" (click)="deleteRuleSet(rs.id)">
+          <mat-icon>delete</mat-icon> Készlet törlése
+        </button>
+      </div>
+    </mat-card>
   </div>
-  <mat-accordion>
-    <mat-expansion-panel *ngFor="let rs of rulesets">
-      <mat-expansion-panel-header>
-        <mat-panel-title>{{ rs.name }}</mat-panel-title>
-      </mat-expansion-panel-header>
-      <ul>
-        <li *ngFor="let rule of rs.rules">
-          <b>{{ rule.name }}</b> – {{ rule.description }} ({{ rule.points }} pont, {{ rule.repetitions }} ismétlés)
-          <button mat-icon-button color="primary" (click)="openEditRuleDialog(rs, rule)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="deleteRule(rs.id, rule.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </li>
-      </ul>
-      <button mat-button (click)="openAddRuleDialog(rs)">Új szabály</button>
-      <button mat-stroked-button color="primary" (click)="openEditDialog(rs)">Szerkesztés</button>
-      <button mat-stroked-button color="warn" (click)="deleteRuleSet(rs.id)">Törlés</button>
-    </mat-expansion-panel>
-  </mat-accordion>
-</mat-card>
+</div>
+
+<div class="ruleset-list-add-btn-row">
+  <button mat-raised-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon> Új készlet
+  </button>
+</div>

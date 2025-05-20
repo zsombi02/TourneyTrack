@@ -1,0 +1,102 @@
+.competition-details-container {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 28px 16px 60px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.create-competition-card {
+  padding: 28px 34px 22px 34px;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #0002;
+  background: #fff;
+  width: 100%;
+  max-width: 700px;
+}
+
+.create-competition-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+.create-competition-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  width: 100%;
+}
+
+.rulesets-select-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.selected-rulesets-list {
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-size: 1.1em;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.ruleset-block {
+  background: #fafaff;
+  padding: 12px 14px 8px 14px;
+  border-radius: 11px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 6px #0001;
+}
+
+.ruleset-title {
+  font-weight: bold;
+  font-size: 1.06em;
+  margin-bottom: 6px;
+}
+
+.rules-list {
+  margin: 0 0 0 18px;
+  padding: 0;
+  color: #333;
+}
+
+.rule-name {
+  font-weight: 500;
+  margin-right: 7px;
+}
+
+.rule-desc {
+  color: #777;
+}
+
+.rule-meta {
+  color: #888;
+  font-size: 0.96em;
+  margin-left: 7px;
+}
+
+.empty-note {
+  color: #aaa;
+  font-size: 0.98em;
+  margin: 3px 0 0 2px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.w-100 {
+  width: 100%;
+}

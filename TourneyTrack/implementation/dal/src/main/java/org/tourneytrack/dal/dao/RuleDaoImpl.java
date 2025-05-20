@@ -21,15 +21,14 @@ public class RuleDaoImpl implements RuleDao {
     private final RuleEntityMapper ruleEntityMapper;
 
     @Override
-    public void save(Rule rule, Long ruleSetId) {
+    public Rule save(Rule rule, Long ruleSetId) {
         RuleSetEntity ruleSet = ruleSetRepository.findById(ruleSetId).orElseThrow();
         RuleEntity entity = new RuleEntity();
         entity.setName(rule.getName());
         entity.setDescription(rule.getDescription());
         entity.setPoints(rule.getPoints());
-        entity.setRepetitions(rule.getRepetitions());
 //        entity.setRuleSet(ruleSet);
-        repository.save(entity);
+        return ruleEntityMapper.toModel(repository.save(entity));
     }
 
     @Override
@@ -38,7 +37,6 @@ public class RuleDaoImpl implements RuleDao {
         entity.setName(rule.getName());
         entity.setDescription(rule.getDescription());
         entity.setPoints(rule.getPoints());
-        entity.setRepetitions(rule.getRepetitions());
         repository.save(entity);
     }
 

@@ -7,6 +7,7 @@ import {ScoreEntryDto} from '../../shared/models/score-entry.dto';
 import {SubmissionDto} from '../../shared/models/submission.dto';
 import {CreateCompetitionRequest} from '../../shared/models/requests/create-competition-request';
 import {CompetitionDto} from '../../shared/models/competition.dto';
+import {RuleSetDto} from '../../shared/models/rule-set.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +32,16 @@ export class CompetitionGameMasterService extends BaseService {
   }
   createCompetition(request: CreateCompetitionRequest): Observable<CompetitionDto> {
     return this.http.post<CompetitionDto>(`${this.API_ROOT}/api/master/competitions/`, request);
+  }
+
+  assignRuleSet(competitionId: number, ruleSetId: number): Observable<void> {
+    return this.http.post<void>(`${this.API_ROOT}/api/master/competitions/${competitionId}/assign-ruleset/${ruleSetId}`, {});
+  }
+
+  removeRuleSet(competitionId: number, ruleSetId: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_ROOT}/api/master/competitions/${competitionId}/remove-ruleset/${ruleSetId}`);
+  }
+  getMyCompetitions(): Observable<CompetitionDto[]> {
+    return this.http.get<CompetitionDto[]>(`${this.API_ROOT}/api/master/competitions/my`);
   }
 }

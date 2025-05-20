@@ -144,4 +144,12 @@ public class CompetitionServiceImpl extends AbstractServiceBase implements Compe
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<CompetitionDto> listByGameMaster(Long gameMasterId) {
+        return competitionDao.findAllByGameMasterId(gameMasterId).stream()
+                .map(competitionMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
 }

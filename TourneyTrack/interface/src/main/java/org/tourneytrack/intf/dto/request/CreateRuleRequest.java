@@ -7,5 +7,4 @@ public class CreateRuleRequest {
     private String name;
     private String description;
     private int points;
-    private int repetitions;
 }

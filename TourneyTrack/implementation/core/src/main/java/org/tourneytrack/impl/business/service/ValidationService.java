@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tourneytrack.impl.dao.*;
 import org.tourneytrack.impl.data.*;
+import org.tourneytrack.impl.error.ValidationException;
 import org.tourneytrack.intf.dto.request.RegisterUserRequest;
 
 import java.util.Date;
@@ -31,91 +32,88 @@ public class ValidationService {
     protected ScoreEntryDao scoreEntryDao;
 
 
-
     public User validateUserExists(Long userId) {
         return userDao.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+                .orElseThrow(() -> new ValidationException("User not found: " + userId));
     }
 
     public Competition validateCompetitionExists(Long competitionId) {
         return competitionDao.findById(competitionId)
-            .orElseThrow(() -> new IllegalArgumentException("Competition not found: " + competitionId));
+                .orElseThrow(() -> new ValidationException("Competition not found: " + competitionId));
     }
 
     public void validateCompetitionIsOpen(Competition competition) {
         if (!competition.isInProgress()) {
-            throw new IllegalStateException("Competition is closed.");
+            throw new ValidationException("Competition is closed.");
         }
     }
 
     public Rule validateRuleExists(Long ruleId) {
-        return ruleDao.getRuleById(ruleId);
+        Rule rule = ruleDao.getRuleById(ruleId);
+        if (rule == null) {
+            throw new ValidationException("Rule not found: " + ruleId);
+        }
+        return rule;
     }
-
 
     public Submission validateSubmissionExists(Long submissionId) {
         return submissionDao.findById(submissionId)
-            .orElseThrow(() -> new IllegalArgumentException("Submission not found: " + submissionId));
+                .orElseThrow(() -> new ValidationException("Submission not found: " + submissionId));
     }
 
     public void validateSubmissionPending(Submission submission) {
         if (submission.getStatus() != SubmissionStatus.PENDING) {
-            throw new IllegalStateException("Submission is already reviewed.");
+            throw new ValidationException("Submission is already reviewed.");
         }
     }
 
     public void validateDeadlineNotInPast(Date deadline) {
         if (deadline.before(new Date())) {
-            throw new IllegalArgumentException("Deadline must be in the future.");
+            throw new ValidationException("Deadline must be in the future.");
         }
     }
 
     public RuleSet validateRuleSetExists(Long ruleSetId) {
         return ruleSetDao.findById(ruleSetId)
-            .orElseThrow(() -> new IllegalArgumentException("RuleSet not found: " + ruleSetId));
+                .orElseThrow(() -> new ValidationException("RuleSet not found: " + ruleSetId));
     }
 
     public void validateUserNotAlreadyJoined(Competition comp, Long userId) {
         boolean joined = comp.getParticipants().stream().anyMatch(u -> u.getId().equals(userId));
-        if (joined) throw new IllegalStateException("User already joined.");
+        if (joined) throw new ValidationException("User already joined.");
     }
-
 
     public void validateRuleSetsExist(List<Long> ruleSetIds) {
         for (Long id : ruleSetIds) {
             if (!ruleSetDao.existsById(id)) {
-                throw new IllegalArgumentException("RuleSet not found: " + id);
+                throw new ValidationException("RuleSet not found: " + id);
             }
         }
     }
 
     public void validateUserJoined(Competition comp, Long userId) {
         boolean joined = comp.getParticipants().stream().anyMatch(u -> u.getId().equals(userId));
-        if (!joined) throw new IllegalStateException("User is not a participant.");
+        if (!joined) throw new ValidationException("User is not a participant.");
     }
 
-
-    public void validateRuleFields(String name, int points, int repetitions) {
+    public void validateRuleFields(String name, int points) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Rule name must not be empty.");
+            throw new ValidationException("Rule name must not be empty.");
         }
         if (points < 0) {
-            throw new IllegalArgumentException("Points must be ≥ 0.");
-        }
-        if (repetitions < 1) {
-            throw new IllegalArgumentException("Repetitions must be ≥ 1.");
+            throw new ValidationException("Points must be ≥ 0.");
         }
     }
 
     public void validateRuleSetName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("RuleSet name must not be empty.");
+            throw new ValidationException("RuleSet name must not be empty.");
         }
     }
 
     public void validateRuleNotUsedInSubmissions(Long ruleId) {
         if (submissionDao.existsByRuleId(ruleId)) {
-            throw new IllegalStateException("Rule is already used in a submission and cannot be deleted.");
+            throw new ValidationException("Rule is already used in a submission and cannot be deleted.");
         }
     }
 
@@ -124,34 +122,34 @@ public class ValidationService {
                 .flatMap(rs -> rs.getRules().stream())
                 .anyMatch(r -> r.getId().equals(ruleId));
         if (!found) {
-            throw new IllegalStateException("Rule is not part of this competition.");
+            throw new ValidationException("Rule is not part of this competition.");
         }
     }
 
     public void validateRegisterFields(RegisterUserRequest request) {
         if (request.getName() == null || request.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Name must not be empty.");
+            throw new ValidationException("Name must not be empty.");
         }
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
-            throw new IllegalArgumentException("Email must not be empty.");
+            throw new ValidationException("Email must not be empty.");
         }
         if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-            throw new IllegalArgumentException("Password must not be empty.");
+            throw new ValidationException("Password must not be empty.");
         }
         if (request.getType() == null) {
-            throw new IllegalArgumentException("User type must be provided.");
+            throw new ValidationException("User type must be provided.");
         }
     }
 
     public void validateEmailNotUsed(String email) {
         if (userDao.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException("Email is already registered: " + email);
+            throw new ValidationException("Email is already registered: " + email);
         }
     }
 
     public User validateUserExistsById(Long id) {
         return userDao.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+                .orElseThrow(() -> new ValidationException("User not found with id: " + id));
     }
 
     public void validateRuleSetNotUsedInCompetitions(Long ruleSetId) {
@@ -159,10 +157,8 @@ public class ValidationService {
         boolean used = all.stream().anyMatch(comp ->
                 comp.getRuleSets().stream().anyMatch(rs -> rs.getId().equals(ruleSetId)));
         if (used) {
-            throw new IllegalStateException("Cannot delete: RuleSet is used in an active competition.");
+            throw new ValidationException("Cannot delete: RuleSet is used in an active competition.");
         }
     }
-
-
 
 }

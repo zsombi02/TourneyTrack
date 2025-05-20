@@ -35,6 +35,10 @@ export class CompetitionListComponent implements OnInit {
     });
   }
 
+  toggleExpand(c: any) {
+    c._expanded = !c._expanded;
+  }
+
   openDetails(id: number) {
     this.router.navigate(['/competitions', id]);
   }

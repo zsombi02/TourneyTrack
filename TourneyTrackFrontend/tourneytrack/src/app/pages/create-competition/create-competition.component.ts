@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {RuleSetDto} from '../../shared/models/rule-set.dto';
-import { RuleSetGameMasterService } from '../../services/ruleset/rule-set-game-master.service';
+import {RuleSetGameMasterService} from '../../services/ruleset/rule-set-game-master.service';
 import {CompetitionGameMasterService} from '../../services/competition/competition-game-master.service';
-import {MatDialog, MatDialogActions} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {RuleSetDialogComponent} from '../../shared/rule-set-dialog/rule-set-dialog.component';
 import {MatCard} from '@angular/material/card';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
@@ -13,7 +13,8 @@ import {MatButton} from '@angular/material/button';
 import {MatSelect} from '@angular/material/select';
 import {CreateCompetitionRequest} from '../../shared/models/requests/create-competition-request';
 import {SessionService} from '../../services/session/session.service';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
+import {MatError} from '@angular/material/form-field';
 
 @Component({
   selector: 'app-create-competition',
@@ -26,8 +27,9 @@ import {NgForOf} from '@angular/common';
     ReactiveFormsModule,
     MatSelect,
     MatButton,
-    MatDialogActions,
-    NgForOf
+    NgForOf,
+    NgIf,
+    MatError
   ],
   templateUrl: './create-competition.component.html',
   styleUrl: './create-competition.component.css'
@@ -35,8 +37,8 @@ import {NgForOf} from '@angular/common';
 export class CreateCompetitionComponent implements OnInit {
   form: FormGroup;
   ruleSets: RuleSetDto[] = [];
-  selectedRuleSets: RuleSetDto[] = [];
   loading = false;
+  minDateStr = '';
 
   constructor(
     private fb: FormBuilder,
@@ -56,6 +58,16 @@ export class CreateCompetitionComponent implements OnInit {
 
   ngOnInit() {
     this.loadRuleSets();
+    // Min date for today (YYYY-MM-DD)
+    const today = new Date();
+    this.minDateStr = today.toISOString().substring(0, 10);
+    this.form.get('deadline')?.setValidators([
+      Validators.required,
+      control => {
+        if (!control.value) return null;
+        return control.value >= this.minDateStr ? null : { min: true };
+      }
+    ]);
   }
 
   loadRuleSets() {
@@ -67,26 +79,20 @@ export class CreateCompetitionComponent implements OnInit {
 
   addRuleSet() {
     const dialogRef = this.dialog.open(RuleSetDialogComponent, {
-      width: '600px',
+      // width: '600px',
       data: null // Új ruleset
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.loadRuleSets(); // Frissíted a listát
+        this.loadRuleSets();
       }
     });
   }
 
-  onRuleSetsChange(event: any) {
-    // Ha kell külön logika, pl. automatikusan hozzáadni a form-hoz a kiválasztottakat
-  }
-
   onSubmit() {
     if (this.form.invalid) return;
-
     this.loading = true;
     const value = this.form.value;
-
     const req: CreateCompetitionRequest = {
       name: value.name,
       description: value.description,
@@ -94,7 +100,6 @@ export class CreateCompetitionComponent implements OnInit {
       ruleSetIds: value.ruleSets.map((rs: any) => rs.id),
       gameMasterId: this.session.getUserId()
     };
-
     this.competitionService.createCompetition(req).subscribe({
       next: (competition) => {
         this.loading = false;
@@ -107,5 +112,4 @@ export class CreateCompetitionComponent implements OnInit {
       }
     });
   }
-
 }

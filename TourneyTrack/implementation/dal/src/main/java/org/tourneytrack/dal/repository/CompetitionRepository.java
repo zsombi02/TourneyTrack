@@ -14,4 +14,6 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
             "WHERE p.id = :userId OR c.gameMaster.id = :userId")
     List<CompetitionEntity> findAllByUserId(@Param("userId") Long userId);
 
+    List<CompetitionEntity> findAllByGameMaster_Id(Long gameMasterId);
+
 }

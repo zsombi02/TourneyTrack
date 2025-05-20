@@ -1,0 +1,103 @@
+.ruleset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+  padding: 24px 24px;
+}
+
+.ruleset-card-wrapper {
+  position: relative;
+}
+
+.ruleset-card {
+  min-width: 0;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px #0001;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 14px 18px;
+}
+
+.ruleset-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ruleset-title {
+  font-size: 1.16rem;
+  font-weight: bold;
+  color: #1a2a4c;
+}
+
+.ruleset-rename-btn {
+  margin-left: 8px;
+  margin-top: -3px;
+}
+
+.rules-list-section {
+  flex: 1 1 auto;
+}
+
+.section-title {
+  font-size: 1.04em;
+  font-weight: 600;
+  color: #19539a;
+  margin-bottom: 3px;
+}
+
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rule-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0 3px 0;
+  font-size: 0.98em;
+}
+
+.rule-name {
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.rule-desc {
+  color: #555;
+}
+
+.rule-meta {
+  color: #999;
+  font-size: 0.95em;
+}
+
+.rule-action-icons {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+
+.ruleset-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.empty-note {
+  color: #aaa;
+  margin: 8px 0 0 0;
+  font-style: italic;
+}
+
+.ruleset-list-add-btn-row {
+  margin: 36px 0 0 0;
+  text-align: left;
+  width: 100%;
+}

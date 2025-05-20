@@ -19,9 +19,9 @@ public class CompetitionDaoImpl implements CompetitionDao {
     private final CompetitionEntityMapper mapper;
 
     @Override
-    public void save(Competition competition) {
+    public Competition save(Competition competition) {
         CompetitionEntity entity = mapper.toEntity(competition);
-            repository.save(entity);
+            return mapper.toModel(repository.save(entity));
     }
 
     @Override
@@ -45,6 +45,13 @@ public class CompetitionDaoImpl implements CompetitionDao {
     @Override
     public List<Competition> findAll() {
         return repository.findAll().stream()
+                .map(mapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Competition> findAllByGameMasterId(Long gameMasterId) {
+        return repository.findAllByGameMaster_Id(gameMasterId).stream()
                 .map(mapper::toModel)
                 .collect(Collectors.toList());
     }

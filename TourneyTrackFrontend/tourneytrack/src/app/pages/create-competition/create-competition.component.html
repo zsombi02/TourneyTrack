@@ -1,27 +1,59 @@
-<mat-card>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <mat-form-field class="w-100">
-      <mat-label>Verseny neve</mat-label>
-      <input matInput formControlName="name" required>
-    </mat-form-field>
-    <mat-form-field class="w-100">
-      <mat-label>Leírás</mat-label>
-      <textarea matInput formControlName="description"></textarea>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Határidő</mat-label>
-      <input matInput type="date" formControlName="deadline" required>
-    </mat-form-field>
-    <mat-form-field class="w-100">
-      <mat-label>Szabálykészletek</mat-label>
-      <mat-select formControlName="ruleSets" multiple>
-        <mat-option *ngFor="let rs of ruleSets" [value]="rs">{{ rs.name }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-<!--    <button mat-button type="button" (click)="addRuleSet()">Új szabálykészlet hozzáadása</button>-->
-    <mat-dialog-actions align="end">
-      <button mat-stroked-button type="button" (click)="router.navigate(['/competitions'])">Mégsem</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">Létrehozás</button>
-    </mat-dialog-actions>
-  </form>
-</mat-card>
+<div class="competition-details-container">
+  <mat-card class="create-competition-card">
+    <h2 class="create-competition-title">Új verseny létrehozása</h2>
+    <form [formGroup]="form" class="create-competition-form" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Verseny neve</mat-label>
+          <input matInput formControlName="name" required>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Leírás</mat-label>
+          <textarea matInput formControlName="description"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Határidő</mat-label>
+          <input matInput type="date" formControlName="deadline" required [min]="minDateStr">
+          <mat-error *ngIf="form.controls['deadline'].hasError('min')">
+            A határidő nem lehet múltbeli dátum!
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="form-row rulesets-select-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Szabálykészletek</mat-label>
+          <mat-select formControlName="ruleSets" multiple>
+            <mat-option *ngFor="let rs of ruleSets" [value]="rs">
+              {{ rs.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-stroked-button color="primary" type="button" (click)="addRuleSet()" style="margin-left: 16px;">
+          Új szabálykészlet hozzáadása
+        </button>
+      </div>
+      <div class="selected-rulesets-list" *ngIf="form.value.ruleSets?.length">
+        <div class="section-title">Kiválasztott szabálykészletek</div>
+        <div class="ruleset-block" *ngFor="let rs of form.value.ruleSets">
+          <div class="ruleset-title"><b>{{ rs.name }}</b></div>
+          <ul class="rules-list">
+            <li *ngFor="let rule of rs.rules">
+              <span class="rule-name">{{ rule.name }}</span>
+              <span class="rule-desc">{{ rule.description }}</span>
+              <span class="rule-meta">({{ rule.points }} pont)</span>
+            </li>
+          </ul>
+          <div *ngIf="!rs.rules?.length" class="empty-note">Nincs szabály ebben a készletben.</div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="router.navigate(['/competitions'])">Mégsem</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">Létrehozás</button>
+      </div>
+    </form>
+  </mat-card>
+</div>

@@ -8,5 +8,4 @@ public class RuleDto {
     private String name;
     private String description;
     private int points;
-    private int repetitions;
 }

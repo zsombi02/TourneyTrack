@@ -36,16 +36,22 @@ export class SubmitScoreDialogComponent {
   selectedRuleId: number | null = null;
   description: string = '';
 
+  allowedRules: RuleDto[] = [];
+
   constructor(
     public dialogRef: MatDialogRef<SubmitScoreDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { rules: RuleDto[] }
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public data: { rules: RuleDto[], userSubmissions: any[] }
+  ) {
+    const submittedRuleIds = new Set(
+      data.userSubmissions.map(sub => sub.rule.id)
+    );
+    this.allowedRules = data.rules.filter(rule => !submittedRuleIds.has(rule.id));
+  }
 
   onSubmit() {
     if (!this.selectedRuleId || !this.description) {
       return;
     }
-    // Visszaadjuk a kiválasztott adatokat a parentnek
     this.dialogRef.close({
       ruleId: this.selectedRuleId,
       description: this.description

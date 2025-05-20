@@ -10,10 +10,12 @@ import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {UserTypeDto} from '../../shared/models/user-type.enum';
 import {RegisterUserRequest} from '../../shared/models/requests/register-user-request';
+import {RouterLink} from '@angular/router';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatOption, MatSelect],
+  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatOption, MatSelect, RouterLink, MatIcon],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })

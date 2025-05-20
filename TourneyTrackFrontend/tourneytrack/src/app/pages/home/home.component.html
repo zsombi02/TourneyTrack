@@ -1,1 +1,80 @@
-<p>home works!</p>
+<div class="home-container">
+  <mat-card *ngIf="loading">Betöltés...</mat-card>
+  <ng-container *ngIf="!loading">
+
+
+    <!-- GAME MASTER nézet -->
+    <ng-container *ngIf="isGameMaster">
+      <h2>Saját szervezésű versenyeim</h2>
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let c of competitions">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ c.name }} <span class="dot"></span>
+              <span class="meta">
+                <b>Határidő:</b> {{ c.deadline | date:'yyyy.MM.dd.' }}
+                <span class="dot"></span>
+                <b>Állapot:</b>
+                <span [ngClass]="c.inProgress ? 'badge-progress' : 'badge-done'">
+                  {{ c.inProgress ? 'Folyamatban' : 'Lezárva' }}
+                </span>
+              </span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="panel-content">
+            <div>{{ c.description }}</div>
+<!--            <button mat-flat-button color="primary" (click)="goToAdminDetails(c.id)">-->
+<!--              Admin nézet-->
+<!--            </button>-->
+            <button mat-stroked-button color="accent" (click)="goToDetails(c.id)">
+              Verseny oldal
+            </button>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <div *ngIf="competitions.length === 0" class="empty-note">
+        Nincs saját versenyed!
+      </div>
+    </ng-container>
+
+    <!-- PLAYER nézet -->
+    <ng-container *ngIf="!isGameMaster">
+      <h2>Saját versenyeim</h2>
+      <div *ngIf="competitions.length === 0" class="empty-note">
+        Nem vagy aktív versenyen résztvevő.
+      </div>
+      <div class="competition-grid" *ngIf="competitions.length > 0">
+        <div class="competition-card-wrapper" *ngFor="let c of competitions">
+          <mat-card class="competition-card">
+            <div class="competition-header-row">
+              <span class="competition-title">{{ c.name }}</span>
+              <button mat-stroked-button color="primary" (click)="goToDetails(c.id)">
+                Részletek
+              </button>
+            </div>
+            <div class="competition-subinfo">
+              <b>Szervező:</b> {{ c.gameMaster?.name }}
+              <span class="dot"></span>
+              <b>Határidő:</b> {{ c.deadline | date:'yyyy.MM.dd.' }}
+            </div>
+            <div class="competition-description">{{ c.description }}</div>
+            <div class="player-submissions-block" *ngIf="getMySubmissionsForCompetition(c.id).length > 0">
+              <h4>Saját beadásaim</h4>
+              <ul>
+                <li *ngFor="let sub of getMySubmissionsForCompetition(c.id)">
+                  <b>{{ sub.rule?.name }}</b> – {{ sub.description }} –
+                  <span [ngClass]="sub.status.toLowerCase()">
+                    {{ sub.status === 'PENDING' ? 'Függőben' : (sub.status === 'APPROVED' ? 'Elfogadva' : 'Elutasítva') }}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+      <div *ngIf="competitions.length > 0 && submissions.length === 0" class="empty-note">
+        Még nem adtál be semmit egyik versenyre sem.
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

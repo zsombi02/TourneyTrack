@@ -7,6 +7,7 @@ import {CompetitionListComponent} from './pages/competition-list/competition-lis
 import {CompetitionDetailsComponent} from './pages/competition-details/competition-details.component';
 import {RuleSetListComponent} from './pages/rule-set-list/rule-set-list.component';
 import {CreateCompetitionComponent} from './pages/create-competition/create-competition.component';
+import {CompetitionAdminDetailsComponent} from './pages/competition-admin-details/competition-admin-details.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,4 +17,5 @@ export const routes: Routes = [
   { path: 'competitions/:id', component: CompetitionDetailsComponent },
   { path: 'rulesets', component: RuleSetListComponent },
   { path: 'create-competition', component: CreateCompetitionComponent },
+  {path: 'competitions/:id/admin', component: CompetitionAdminDetailsComponent}
 ];

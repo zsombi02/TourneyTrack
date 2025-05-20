@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {MatButton, MatButtonModule} from '@angular/material/button';
-import {MatInput, MatInputModule} from '@angular/material/input';
+import {MatFormField, MatInput, MatInputModule} from '@angular/material/input';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
@@ -15,7 +15,7 @@ import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatToolbar, MatIcon],
+  imports: [CommonModule, MatToolbar, MatIcon, MatFormField, MatInput, MatButton, FormsModule,],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
@@ -59,7 +59,7 @@ export class NavbarComponent {
   }
 
   goToMyCompetitions() {
-    this.router.navigate(['/my-competitions']);
+    this.router.navigate(['/']);
   }
 
   goToProfile() {

@@ -1,42 +1,124 @@
-<mat-card>
-  <form [formGroup]="editForm">
-    <mat-form-field>
-      <mat-label>Név</mat-label>
-      <input matInput formControlName="name" />
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Leírás</mat-label>
-      <textarea matInput formControlName="description"></textarea>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Határidő</mat-label>
-      <input matInput type="date" formControlName="deadline" />
-    </mat-form-field>
-    <button mat-flat-button color="primary" (click)="onSave()" type="button">Mentés</button>
-    <button mat-flat-button color="warn" (click)="onDeleteCompetition()" type="button">Verseny törlése</button>
-    <button mat-stroked-button color="warn" (click)="onStopCompetition()" type="button">Verseny leállítása</button>
-  </form>
-</mat-card>
-<mat-tab-group>
-  <mat-tab label="Scoreboard">
-    <ul>
-      <li *ngFor="let s of scoreboard">
-        {{ s.player.name }} – {{ s.rule.name }}: {{ s.pointsEarned }} pont
-      </li>
-    </ul>
-  </mat-tab>
-  <mat-tab label="Submissions">
-    <ul>
-      <li *ngFor="let sub of submissions">
-        <div>
-          {{ sub.user.name }} – {{ sub.rule.name }} – {{ sub.description }} – {{ sub.status }}
+<div class="admin-details-wrapper">
+  <mat-tab-group [(selectedIndex)]="selectedTab">
+    <!-- ÁLTALÁNOS -->
+    <mat-tab label="Általános">
+      <div class="admin-section">
+        <div class="admin-header">
+          <h2>{{ competition?.name }}</h2>
+          <div class="meta-row">
+            <span><b>Szervező:</b> {{ competition?.gameMaster?.name }}</span>
+            <span class="dot"></span>
+            <span><b>Határidő:</b> {{ competition?.deadline | date:'yyyy.MM.dd.' }}</span>
+            <span class="dot"></span>
+            <span><b>Állapot:</b>
+              <span [ngClass]="competition?.inProgress ? 'progress' : 'inactive'">
+                {{ competition?.inProgress ? 'Folyamatban' : 'Lezárt' }}
+              </span>
+            </span>
+          </div>
         </div>
-        <mat-form-field>
-          <input matInput #comment placeholder="Reviewer comment" />
+        <form [formGroup]="editForm" class="admin-form-fields" (ngSubmit)="onSave()">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Verseny neve</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Leírás</mat-label>
+              <textarea matInput formControlName="description"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Határidő</mat-label>
+              <input matInput type="date" formControlName="deadline" [min]="minDateStr" />
+              <mat-error *ngIf="editForm.controls['deadline'].hasError('min')">
+                A határidő nem lehet múltbeli dátum!
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="edit-actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="editForm.invalid">Mentés</button>
+            <button mat-stroked-button color="warn" (click)="onDeleteCompetition()" type="button">Verseny törlése</button>
+            <button mat-stroked-button color="accent" (click)="onStopCompetition()" type="button">Verseny leállítása</button>
+          </div>
+        </form>
+      </div>
+    </mat-tab>
+    <!-- SZABÁLYKÉSZLETEK -->
+    <mat-tab label="Szabálykészletek">
+      <div class="admin-section">
+        <div class="section-title">Versenyhez rendelt szabálykészletek</div>
+        <div class="assigned-rulesets-list">
+          <div
+            class="ruleset-block"
+            *ngFor="let rs of competition?.ruleSets"
+          >
+            <div class="ruleset-header">
+              <div class="ruleset-title">
+                <b>{{ rs.name }}</b>
+              </div>
+              <button
+                mat-icon-button
+                color="warn"
+                aria-label="Szabálykészlet eltávolítása"
+                (click)="onRemoveRuleSet(rs.id)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <ul class="rules-list">
+              <li *ngFor="let rule of rs.rules">
+                <span class="rule-name">{{ rule.name }}</span>
+                <span class="rule-desc">{{ rule.description }}</span>
+                <span class="rule-meta">({{ rule.points }} pont)</span>
+              </li>
+            </ul>
+            <div *ngIf="!rs.rules?.length" class="empty-note">Nincs szabály ebben a készletben.</div>
+          </div>
+          <div *ngIf="!competition?.ruleSets?.length" class="empty-note">
+            Nincs hozzárendelt szabálykészlet.
+          </div>
+        </div>
+
+        <mat-divider style="margin:18px 0;"></mat-divider>
+        <div class="section-title">Új szabálykészlet(ek) hozzáadása</div>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Szabálykészletek kiválasztása</mat-label>
+          <mat-select multiple [(ngModel)]="selectedRuleSetIds">
+            <mat-option *ngFor="let rs of availableRuleSets" [value]="rs.id" >
+              {{ rs.name }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
-        <button mat-button color="primary" (click)="approveSubmission(sub, true, comment.value)">Approve</button>
-        <button mat-button color="warn" (click)="approveSubmission(sub, false, comment.value)">Reject</button>
-      </li>
-    </ul>
-  </mat-tab>
-</mat-tab-group>
+        <button mat-flat-button color="primary" class="add-btn" (click)="onAssignRuleSets()"
+                [disabled]="!selectedRuleSetIds.length || assigning">
+          Hozzáadás
+        </button>
+      </div>
+    </mat-tab>
+    <!-- SUBMISSIONS -->
+    <mat-tab label="Pending beadások">
+      <div class="admin-form-section">
+        <div *ngIf="pendingSubmissions.length === 0" style="color: #888; margin-top:18px;">Nincs elbírálatlan beadás.</div>
+        <div *ngFor="let sub of pendingSubmissions" class="pending-submission-card">
+          <div>
+            <b>{{ sub.user.name }}</b> (<span class="email">{{ sub.user.email }}</span>)<br>
+            <b>Szabály:</b> {{ sub.rule.name }}<br>
+            <b>Leírás:</b> {{ sub.description }}
+          </div>
+          <mat-form-field appearance="outline" class="comment-field">
+            <mat-label>Megjegyzés (opcionális)</mat-label>
+            <input matInput [(ngModel)]="reviewerComments[sub.id]">
+          </mat-form-field>
+          <div class="submission-actions">
+            <button mat-flat-button color="primary" (click)="onApproveSubmission(sub, true)">Jóváhagyás</button>
+            <button mat-stroked-button color="warn" (click)="onApproveSubmission(sub, false)">Elutasítás</button>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

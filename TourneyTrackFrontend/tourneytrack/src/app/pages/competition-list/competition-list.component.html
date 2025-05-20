@@ -1,18 +1,73 @@
 <mat-card *ngIf="loading">Betöltés...</mat-card>
 <mat-card *ngIf="!loading && competitions.length === 0">Nincs verseny!</mat-card>
-<mat-accordion *ngIf="!loading">
-  <mat-expansion-panel *ngFor="let c of competitions">
-    <mat-expansion-panel-header>
-      <mat-panel-title>{{ c.name }}</mat-panel-title>
-      <mat-panel-description>
-        Szervező: {{ c.gameMaster?.name }} &nbsp;|&nbsp;
-        Határidő: {{ c.deadline | date:'yyyy.MM.dd.' }}
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-    <div>
-      <strong>Leírás:</strong> {{ c.description }}<br>
-      <strong>Határidő:</strong> {{ c.deadline | date:'yyyy.MM.dd.' }}
-    </div>
-    <button mat-button color="primary" (click)="openDetails(c.id)">Részletek</button>
-  </mat-expansion-panel>
-</mat-accordion>
+
+<div class="competition-grid" *ngIf="!loading && competitions.length > 0">
+  <div
+    class="competition-card-wrapper"
+    *ngFor="let c of competitions"
+    [class.inactive]="!c.inProgress"
+  >
+    <mat-card class="competition-card" [ngClass]="{ 'inactive-card': !c.inProgress }">
+      <div class="competition-header-row">
+        <span class="competition-title">{{ c.name }}</span>
+        <span style="display: flex; gap: 8px;">
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="toggleExpand(c)"
+            [disabled]="!c.inProgress"
+          >
+            {{ c._expanded ? 'Bezár' : 'Részletek' }}
+          </button>
+          <button
+            mat-flat-button
+            color="accent"
+            (click)="openDetails(c.id)"
+            [disabled]="!c.inProgress"
+          >
+            Verseny oldal
+          </button>
+        </span>
+      </div>
+      <div class="competition-subinfo">
+        <b>Szervező:</b> {{ c.gameMaster?.name }}
+        <span class="dot"></span>
+        <b>Határidő:</b> {{ c.deadline | date: 'yyyy.MM.dd.' }}
+      </div>
+      <div class="competition-description">
+        {{ c.description }}
+      </div>
+      <div *ngIf="c._expanded" class="competition-expand-details">
+        <div class="details-columns">
+          <div class="details-column">
+            <h4>Szabályok</h4>
+            <ng-container *ngFor="let ruleSet of c.ruleSets">
+              <div class="ruleset-block">
+                <b>{{ ruleSet.name }}</b>
+                <ul>
+                  <li *ngFor="let rule of ruleSet.rules">
+                    <strong>{{ rule.name }}</strong>
+                    – {{ rule.description }}
+                    ({{ rule.points }} pont)
+                  </li>
+                </ul>
+              </div>
+            </ng-container>
+          </div>
+          <div class="details-column">
+            <h4>Résztvevők</h4>
+            <ul>
+              <li *ngFor="let user of c.participants">
+                {{ user.name }}
+                <span class="email">({{ user.email }})</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!c.inProgress" class="inactive-overlay">
+        <span>Lezárt verseny</span>
+      </div>
+    </mat-card>
+  </div>
+</div>

@@ -15,10 +15,13 @@ import {CompetitionPlayerService} from '../../services/competition/competition-p
 import {SubmitScoreDialogComponent} from '../../shared/submit-score-dialog/submit-score-dialog.component';
 import {SubmitScoreRequest} from '../../shared/models/requests/submit-score-request';
 import {CompetitionAdminDetailsComponent} from '../competition-admin-details/competition-admin-details.component';
+import {ScoreboardPlayer} from '../../shared/models/scoreboard-player';
+import {RuleDto} from '../../shared/models/rule.dto';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-competition-details',
-  imports: [CommonModule, MatTabsModule, MatCardModule, MatButtonModule, CompetitionAdminDetailsComponent],
+  imports: [CommonModule, MatTabsModule, MatCardModule, MatButtonModule, CompetitionAdminDetailsComponent, MatIcon],
   templateUrl: './competition-details.component.html',
   styleUrl: './competition-details.component.css'
 })
@@ -30,6 +33,10 @@ export class CompetitionDetailsComponent implements OnInit {
 
   selectedTab = 0;
   adminMode = false;
+
+  playerScores: ScoreboardPlayer[] = [];
+  submissionStatusFilter: string = 'ALL';
+  filteredSubmissions: SubmissionDto[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -46,10 +53,61 @@ export class CompetitionDetailsComponent implements OnInit {
 
   loadCompetition(id: number) {
     this.loading = true;
-    this.competitionService.getCompetitionById(id).subscribe(data => this.competition = data);
-    this.competitionService.getScoreBoard(id).subscribe(data => this.scoreboard = data);
-    this.competitionService.getSubmissions(id).subscribe(data => this.submissions = data);
-    this.loading = false;
+    this.competitionService.getCompetitionById(id).subscribe(data => {
+      this.competition = data;
+      this.processScoreboard();
+    });
+    this.competitionService.getScoreBoard(id).subscribe(data => {
+      this.scoreboard = data;
+      this.processScoreboard();
+    });
+    this.competitionService.getSubmissions(id).subscribe(data => {
+      this.submissions = data;
+      this.filterSubmissions();
+    });    this.loading = false;
+  }
+
+  filterSubmissions() {
+    if (this.submissionStatusFilter === 'ALL') {
+      this.filteredSubmissions = this.submissions;
+    } else {
+      this.filteredSubmissions = this.submissions.filter(s => s.status === this.submissionStatusFilter);
+    }
+  }
+
+  setSubmissionFilter(status: string) {
+    this.submissionStatusFilter = status;
+    this.filterSubmissions();
+  }
+
+  processScoreboard() {
+    if (!this.competition) return;
+
+    // Minden szabály id-k összegyűjtése
+    const allRules: RuleDto[] = (this.competition.ruleSets || []).flatMap(rs => rs.rules);
+
+    this.playerScores = (this.competition.participants || []).map(player => {
+      // Default minden szabályhoz 0 pont
+      const rulePoints: { [ruleId: number]: number } = {};
+      for (const rule of allRules) rulePoints[rule.id] = 0;
+
+      // ScoreEntryDto-kból összesítés
+      this.scoreboard
+        .filter(e => e.player.id === player.id)
+        .forEach(e => { rulePoints[e.rule.id] = e.pointsEarned; });
+
+      const total = Object.values(rulePoints).reduce((sum, p) => sum + p, 0);
+
+      return { player, total, rulePoints, expanded: false };
+    });
+
+    // Ranglista pont szerint
+    this.playerScores.sort((a, b) => b.total - a.total);
+  }
+
+  /** Lenyitás toggle */
+  togglePlayerExpand(ps: ScoreboardPlayer) {
+    ps.expanded = !ps.expanded;
   }
 
   // ------ LOGIKA METÓDUSOK ------
@@ -99,15 +157,26 @@ export class CompetitionDetailsComponent implements OnInit {
 
   openSubmissionDialog() {
     if (!this.competition) return;
+    const currentUser = this.session.getCurrentUser();
+    if (!currentUser) return;
+
+    // Vedd ki csak az aktuális user nem rejected submissionjeit!
+    const userSubmissions = this.submissions.filter(
+      sub => sub.user.id === currentUser.id && sub.status !== 'REJECTED'
+    );
     this.dialog.open(SubmitScoreDialogComponent, {
       width: '400px',
-      data: { rules: this.competition.ruleSets?.flatMap(rs => rs.rules) || [] }
+      data: {
+        rules: this.competition.ruleSets?.flatMap(rs => rs.rules) || [],
+        userSubmissions
+      }
     }).afterClosed().subscribe(result => {
       if (result && result.ruleId && result.description) {
         this.submitScore(result.ruleId, result.description);
       }
     });
   }
+
 
   submitScore(ruleId: number, description: string) {
     if (!this.competition) return;
@@ -142,6 +211,14 @@ export class CompetitionDetailsComponent implements OnInit {
 
   goToNormalView() {
     this.adminMode = false;
+  }
+
+  refreshScoreboard() {
+    if (!this.competition?.id) return;
+    this.competitionService.getScoreBoard(this.competition.id).subscribe(data => {
+      this.scoreboard = data;
+      this.processScoreboard();
+    });
   }
 
 }

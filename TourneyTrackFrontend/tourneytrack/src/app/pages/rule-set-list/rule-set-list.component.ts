@@ -9,11 +9,12 @@ import {
   MatExpansionPanelHeader,
   MatExpansionPanelTitle
 } from '@angular/material/expansion';
-import {NgForOf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {RuleSetDialogComponent} from '../../shared/rule-set-dialog/rule-set-dialog.component';
 import {RuleDialogComponent} from '../../shared/rule-dialog/rule-dialog.component';
 import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatProgressBar} from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-rule-set-list',
@@ -26,7 +27,9 @@ import {MatButton, MatIconButton} from '@angular/material/button';
     NgForOf,
     MatIcon,
     MatButton,
-    MatIconButton
+    MatIconButton,
+    MatProgressBar,
+    NgIf
   ],
   templateUrl: './rule-set-list.component.html',
   styleUrl: './rule-set-list.component.css'

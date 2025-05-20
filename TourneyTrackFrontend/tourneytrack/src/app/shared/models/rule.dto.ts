@@ -3,5 +3,4 @@ export interface RuleDto {
   name: string;
   description: string;
   points: number;
-  repetitions: number;
 }

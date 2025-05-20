@@ -1,7 +1,261 @@
-.competition-header {
+.competition-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.competition-details-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.competition-details-meta {
+  color: #666;
+  font-size: 1em;
+  margin: 6px 0 0 0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.competition-details-meta .dot {
+  width: 5px; height: 5px; background: #bbb; border-radius: 100%; display: inline-block; margin-bottom: 1px;
+}
+.competition-details-meta .progress {
+  color: #34a853; font-weight: bold;
+}
+.competition-details-meta .inactive {
+  color: #999; font-weight: bold;
+}
+
+.overview-section {
+  padding: 12px 0 0 0;
+}
+.overview-main {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.overview-section-row {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.overview-section-row > div {
+  flex: 1 1 320px;
+  min-width: 260px;
+}
+.ruleset-block {
+  margin-bottom: 16px;
+}
+.user-list {
+  padding-left: 1em;
+}
+.email {
+  color: #888;
+  font-size: 0.97em;
+}
+.muted {
+  color: #aaa;
+  font-style: italic;
+  font-size: 0.98em;
+}
+.competition-description {
+  margin-bottom: 10px;
+  font-size: 1.09em;
+}
+.competition-details-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 36px 24px 48px 24px;
+  /* Alulra is adj elég helyet, hogy a tartalom lélegezzen! */
+}
+
+.competition-details-card {
+  border-radius: 20px;
+  box-shadow: 0 4px 32px #0002;
+  padding: 36px 36px 32px 36px;
+  background: #fff;
+  color: #232323;
+  margin: 32px 32px 0 32px; /* legyen távolság oldalt */
+}
+
+/* Leírás blokk külön, alatta oszlopos rész */
+.section-block {
+  background: #f8f9fb;
+  border-radius: 13px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 18px 20px 10px 20px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+  color: #2a2a2a;
+}
+
+.details-row {
+  display: flex;
+  gap: 32px;
+  margin-top: 8px;
+}
+
+.details-row .section-block {
+  flex: 1 1 320px;
+  min-width: 280px;
+  max-width: 480px;
+}
+
+/* Mobilbarát! */
+@media (max-width: 900px) {
+  .details-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+
+.scoreboard-table {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 14px #0002;
+  overflow: hidden;
+}
+
+.scoreboard-header, .scoreboard-row {
   display: flex;
   align-items: center;
+  min-height: 46px;
+  font-size: 1.1em;
+  border-bottom: 1px solid #eee;
+  padding: 0 18px;
+  background: #fafafd;
 }
-.grow {
-  flex: 1 1 auto;
+.scoreboard-header {
+  font-weight: bold;
+  background: #f3f3f8;
+}
+
+.place-cell    { width: 44px; text-align: center; font-weight: bold; }
+.player-cell   { flex: 2; min-width: 120px; }
+.total-cell    { width: 80px; text-align: right; font-weight: bold; }
+.expand-cell   { width: 44px; text-align: center; }
+
+.scoreboard-row-details {
+  background: #f8f8fc;
+  padding: 12px 32px 16px 80px;
+  border-bottom: 1px solid #ececec;
+  font-size: 0.97em;
+  animation: fadeIn 0.25s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-12px);}
+  to   { opacity: 1; transform: none;}
+}
+.scoreboard-row-details table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f8f8fc;
+}
+.scoreboard-row-details th, .scoreboard-row-details td {
+  padding: 5px 12px;
+}
+.scoreboard-row-details th {
+  background: #e0e5fa;
+  text-align: left;
+}
+.scoreboard-row-details tr b {
+  color: #324078;
+  font-size: 1em;
+}
+
+.scoreboard-row.top1 .player-cell { font-weight: bold; color: #bc8501; }
+.scoreboard-row.top2 .player-cell { font-weight: bold; color: #8c7a5a; }
+.scoreboard-row.top3 .player-cell { font-weight: bold; color: #5a738c; }
+
+.submissions-filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  margin-top: 8px;
+}
+
+.submission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.submission-card {
+  padding: 18px 22px 10px 22px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px #0001;
+  border-left: 6px solid #bbb;
+  background: #fff;
+  transition: border-color 0.2s, background 0.2s;
+}
+.submission-card.pending {
+  border-color: #ffa726;
+}
+.submission-card.approved {
+  border-color: #43a047;
+  background: #f1faee;
+}
+.submission-card.rejected {
+  border-color: #e53935;
+  background: #ffeaea;
+}
+
+.submission-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+.submission-user {
+  flex: 2;
+}
+.submission-date {
+  color: #888;
+  font-size: 0.98em;
+  flex: 1;
+  text-align: right;
+}
+.submission-status {
+  margin-left: 12px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.97em;
+  font-weight: bold;
+}
+.submission-status.pending { background: #fff3e0; color: #fb8c00;}
+.submission-status.approved { background: #e8f5e9; color: #388e3c;}
+.submission-status.rejected { background: #ffebee; color: #c62828;}
+
+.submission-details {
+  margin-top: 5px;
+  color: #333;
+  font-size: 1em;
+}
+.submission-points {
+  margin-top: 9px;
+  font-weight: bold;
+  color: #1565c0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 1.08em;
+}
+.no-submissions {
+  color: #888;
+  margin: 24px 0 0 0;
+  text-align: center;
 }

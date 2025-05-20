@@ -15,7 +15,6 @@ export class AuthService extends BaseService {
 
   register(data: RegisterUserRequest): Observable<void> {
     return this.http.post<void>(`${this.API_ROOT}/api/auth/register`, data);
-    // Ha a backend visszaadja a user-t, akkor Observable<UserDto>!
   }
 
   login(email: string, password: string): Observable<UserDto> {
