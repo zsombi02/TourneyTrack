@@ -11,11 +11,9 @@ import org.tourneytrack.intf.dto.data.SubmissionDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/player/submissions")
 @PreAuthorize("hasRole('PLAYER')")
 public class PlayerSubmissionController extends AbstractController implements PlayerSubmissionControllerIntf {
 
-    @GetMapping
     public List<SubmissionDto> getMySubmissions(Authentication authentication) {
         Long userId = userService.getByEmail(authentication.getName()).getId();
         return submissionService.getByUser(userId);

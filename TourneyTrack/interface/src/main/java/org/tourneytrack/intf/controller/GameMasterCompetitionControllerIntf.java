@@ -1,5 +1,7 @@
 package org.tourneytrack.intf.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import org.tourneytrack.intf.dto.data.CompetitionDto;
 import org.tourneytrack.intf.dto.data.ScoreEntryDto;
 import org.tourneytrack.intf.dto.data.SubmissionDto;
@@ -9,17 +11,33 @@ import org.tourneytrack.intf.dto.request.UpdateCompetitionRequest;
 
 import java.util.List;
 
+@RequestMapping("/api/master/competitions")
 public interface GameMasterCompetitionControllerIntf {
 
-    void createCompetition(CreateCompetitionRequest request);
+    @PostMapping
+    void createCompetition(@RequestBody CreateCompetitionRequest request);
 
-    void updateCompetition(Long id, UpdateCompetitionRequest request);
+    @PutMapping("/{id}")
+    void updateCompetition(@PathVariable Long id, @RequestBody UpdateCompetitionRequest request);
 
-    void deleteCompetition(Long id);
+    @DeleteMapping("/{id}")
+    void deleteCompetition(@PathVariable Long id);
 
-    void stopCompetition(Long id);
+    @PatchMapping("/{id}/stop")
+    void stopCompetition(@PathVariable Long id);
 
-    List<ScoreEntryDto> getScoreBoard(Long id);
+    @GetMapping("/{id}/scoreboard")
+    List<ScoreEntryDto> getScoreBoard(@PathVariable Long id);
 
-    List<SubmissionDto> getSubmissions(Long id);
+    @GetMapping("/{id}/submissions")
+    List<SubmissionDto> getSubmissions(@PathVariable Long id);
+
+    @PostMapping("/{id}/assign-ruleset/{rulesetId}")
+    void assignRuleSet(@PathVariable Long id, @PathVariable Long rulesetId);
+
+    @DeleteMapping("/{id}/remove-ruleset/{rulesetId}")
+    void removeRuleSet(@PathVariable Long id, @PathVariable Long rulesetId);
+
+    @GetMapping("/my")
+    List<CompetitionDto> getMyCompetitions(Authentication authentication);
 }

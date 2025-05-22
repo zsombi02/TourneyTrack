@@ -1,34 +1,22 @@
 import {Component, OnInit} from '@angular/core';
 import {RuleSetDto} from '../../shared/models/rule-set.dto';
-import { RuleSetGameMasterService } from '../../services/ruleset/rule-set-game-master.service';
-import { MatDialog } from '@angular/material/dialog';
+import {RuleSetGameMasterService} from '../../services/ruleset/rule-set-game-master.service';
+import {MatDialog} from '@angular/material/dialog';
 import {MatCard} from '@angular/material/card';
-import {
-  MatAccordion,
-  MatExpansionPanel,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle
-} from '@angular/material/expansion';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {RuleSetDialogComponent} from '../../shared/rule-set-dialog/rule-set-dialog.component';
 import {RuleDialogComponent} from '../../shared/rule-dialog/rule-dialog.component';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MatProgressBar} from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-rule-set-list',
   imports: [
     MatCard,
-    MatAccordion,
-    MatExpansionPanel,
-    MatExpansionPanelTitle,
-    MatExpansionPanelHeader,
     NgForOf,
     MatIcon,
     MatButton,
     MatIconButton,
-    MatProgressBar,
     NgIf
   ],
   templateUrl: './rule-set-list.component.html',
